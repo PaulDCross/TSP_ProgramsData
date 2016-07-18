@@ -7,6 +7,7 @@ import os
 import sys
 from matplotlib import pyplot as plt
 from sklearn import linear_model
+from operator import itemgetter
 np.set_printoptions(precision=3, suppress=True, linewidth = 150)
 
 class rw():
@@ -27,7 +28,6 @@ def makedir(DIR):
         os.makedirs(DIR)
         time.sleep(0.5)
 
-
 ProgramsData= os.path.join("..", "..", "..", "Python", "TSP_Testing", "TSP_Testing", "ProgramsData")
 ztool       = 167.5
 zcoordinate = 358.0
@@ -41,15 +41,15 @@ names       = data.dtype.names
 Column0     = names.index('Displacement')
 Column1     = names.index('DifferenceX')
 Column2     = names.index('DifferenceY')
-saving      = 1
-savingGraph = 0
+saving      = 0
+savingGraph = 1
 Sets        = int(1 + len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
 for single in range(2):
     SaveDataArray = []
-    for set_ in range(2, Sets): # for set_ in range(2, Sets):
+    for set_ in range(2, 3): # for set_ in range(2, Sets):
         SaveDataLine  = []
-        for step in range(1, Sets): # for step in range(1, Sets):
-            gnb = linear_model.BayesianRidge()
+        for step in range(2, 3): # for step in range(1, Sets):
+            gnb = linear_model.BayesianRidge(compute_score = True)
             train, test, labels1, labels2, label1, label2 = [], [], [], [], [], []
             for _, values in enumerate(data[['Displacement', 'DifferenceX', 'DifferenceY', 'Bearing', 'X', 'Y', 'Z', 'Rx', 'Ry', 'Rz', 'DataSet', 'State', 'Type', 'Depth']]):
                 if values['Type'][0] == 'Z':
@@ -111,13 +111,16 @@ for single in range(2):
         x1                = [float(i[1])/10 for i in y_pred2z]
         y1                = [float(i[0])/10 for i in y_pred2z]
         labels2           = [float(i)/10 for i in label2]
-        toMatlab          = zip(x1, y1, labels2)
+        # toMatlab          = zip(x1, y1, labels2)
         best_fit          = plt.plot(labels2, labels2, 'r-', label="Correct Classification")
         Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
         handles, labels   = ax.get_legend_handles_labels()
-        rw().writeList2File(os.path.join(directory, Name + "_ML.txt"), toMatlab)
-        print "Saved for Matlab"
+        # fig = plt.figure()
+        # ax  = plt.subplot(1,1,1)
+        # plt.plot([np.std(i) for i in y_pred2z])
+        # rw().writeList2File(os.path.join(directory, Name + "_ML.txt"), toMatlab)
+        # print "Saved for Matlab"
         plt.legend(handles, labels, loc=4)
         plt.grid()
-        plt.savefig(os.path.join(directory, Name + '.png'), dpi=None, facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format=None, transparent=False, bbox_inches=None, pad_inches=0.1, frameon=None)
+        # plt.savefig(os.path.join(directory, Name + '.png'), dpi=None, facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format=None, transparent=False, bbox_inches=None, pad_inches=0.1, frameon=None)
         plt.show()
