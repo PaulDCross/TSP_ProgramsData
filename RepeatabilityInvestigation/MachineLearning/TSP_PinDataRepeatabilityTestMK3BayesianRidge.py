@@ -1,15 +1,11 @@
-from PillowEdited import *
-import cv2
+import sys, os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../../libraries")
+from Pillow import rw
 import numpy as np
-import math
 import time
 import os
-import copy
 import sys
 from matplotlib import pyplot as plt
-from operator import itemgetter
-from scipy.interpolate import interp1d
-from scipy import ndimage
 from sklearn import linear_model
 np.set_printoptions(precision=3, suppress=True, linewidth = 150)
 rw  = rw()
@@ -19,21 +15,23 @@ def makedir(DIR):
         os.makedirs(DIR)
         time.sleep(0.5)
 
-ztool         = 167.5
-zcoordinate   = 358.0
-directory     = os.path.join("PinDataResults", "NewPillowRepeatabilityTestTypeResetBayesianRidge", "EE{0}".format(ztool))
+
+ProgramsData= os.path.join("..", "..", "..", "Python", "TSP_Testing", "TSP_Testing", "ProgramsData")
+ztool       = 167.5
+zcoordinate = 358.0
+directory   = os.path.join(ProgramsData, "PinDataResults", "NewPillowRepeatabilityTestTypeResetBayesianRidge", "EE{0}".format(ztool))
 makedir(directory)
-DIR           = os.path.join("TSP_Pictures", "NewPillowRepeatabilityTest", "EE{0}".format(ztool), "{0}mm".format(zcoordinate))
-# data          = np.load(os.path.join(DIR, "Otsudataline110.npy"))
-data          = np.load(os.path.join(DIR, "dataline110.npy"))
+DIR         = os.path.join(ProgramsData, "TSP_Pictures", "NewPillowRepeatabilityTest", "EE{0}".format(ztool), "{0}mm".format(zcoordinate))
+# data      = np.load(os.path.join(DIR, "Otsudataline110.npy"))
+data        = np.load(os.path.join(DIR, "dataline110.npy"))
 print "Loaded Data"
-names         = data.dtype.names
-Column0       = names.index('Displacement')
-Column1       = names.index('DifferenceX')
-Column2       = names.index('DifferenceY')
-saving        = 1
-savingGraph   = 0
-Sets          = int(1 + len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
+names       = data.dtype.names
+Column0     = names.index('Displacement')
+Column1     = names.index('DifferenceX')
+Column2     = names.index('DifferenceY')
+saving      = 1
+savingGraph = 0
+Sets        = int(1 + len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
 for single in range(2):
     SaveDataArray = []
     for set_ in range(2, Sets): # for set_ in range(2, Sets):
