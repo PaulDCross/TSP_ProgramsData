@@ -8,7 +8,19 @@ import sys
 from matplotlib import pyplot as plt
 from sklearn import linear_model
 np.set_printoptions(precision=3, suppress=True, linewidth = 150)
-rw  = rw()
+
+class rw():
+    def readFile2List(self, textFile):
+        with open(textFile, "r") as file:
+            data = []
+            for line in file.readlines():
+                data.append([float(i) for i in line.split()])
+        return data
+
+    def writeList2File(self, textFile, DATA):
+        with open(textFile, "w") as file:
+            DATA = '\n'.join('\t'.join(map(str,j)) for j in DATA)
+            file.write(DATA)
 
 def makedir(DIR):
     if not os.path.exists(DIR):
@@ -19,7 +31,7 @@ def makedir(DIR):
 ProgramsData= os.path.join("..", "..", "..", "Python", "TSP_Testing", "TSP_Testing", "ProgramsData")
 ztool       = 167.5
 zcoordinate = 358.0
-directory   = os.path.join(ProgramsData, "PinDataResults", "NewPillowRepeatabilityTestTypeResetBayesianRidge", "EE{0}".format(ztool))
+directory   = os.path.join("..", "..", "PinDataResults", "NewPillowRepeatabilityTestTypeResetBayesianRidge", "EE{0}".format(ztool))
 makedir(directory)
 DIR         = os.path.join(ProgramsData, "TSP_Pictures", "NewPillowRepeatabilityTest", "EE{0}".format(ztool), "{0}mm".format(zcoordinate))
 # data      = np.load(os.path.join(DIR, "Otsudataline110.npy"))
@@ -87,9 +99,8 @@ for single in range(2):
     #     Name = "TSP_Repeatability_Displacement_Otsu"
     # else:
     #     Name = "TSP_Repeatability_DistanceX_DistanceY_Otsu"
-    print os.path.join(directory, Name)
     if saving:
-        rw.writeList2File(os.path.join(directory, Name + ".txt"), SaveDataArray)
+        rw().writeList2File(os.path.join(directory, Name + ".txt"), SaveDataArray)
 
     if savingGraph:
         fig = plt.figure()
@@ -104,7 +115,7 @@ for single in range(2):
         best_fit          = plt.plot(labels2, labels2, 'r-', label="Correct Classification")
         Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
         handles, labels   = ax.get_legend_handles_labels()
-        rw.writeList2File(os.path.join(directory, Name + "_ML.txt"), toMatlab)
+        rw().writeList2File(os.path.join(directory, Name + "_ML.txt"), toMatlab)
         print "Saved for Matlab"
         plt.legend(handles, labels, loc=4)
         plt.grid()

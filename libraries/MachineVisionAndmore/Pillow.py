@@ -4,6 +4,7 @@ import math
 import itertools
 import numpy as np
 from decimal import Decimal
+import os
 
 __all__ = ['chunker', 'Pillow', 'rw', 'click_and_crop', 'Pins']
 
@@ -198,6 +199,7 @@ class rw():
         return data
 
     def writeList2File(self, textFile, DATA):
+        print os.getcwd(), "\n"
         with open(textFile, "w") as file:
             DATA = '\n'.join('\t'.join(map(str,j)) for j in DATA)
             file.write(DATA)
