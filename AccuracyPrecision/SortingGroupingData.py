@@ -10,6 +10,7 @@ def getKey(item):
 DIR   = os.path.join("..", "..", "Python", "TSP_Testing", "TSP_Testing", "ProgramsData", "TSP_Pictures", "NewPillowRepeatabilityTest", "EE167.5", "358.0mm")
 data  = np.load(os.path.join(DIR, "datalineJuly14110.npy"))
 names = data.dtype.names
+print names
 
 sortedData  = np.array(sorted(data, key=getKey))                            # Sort data
 groupedData = np.array([list(j) for i,j in groupby(sortedData, key=getKey)])# Group sorted data
@@ -22,11 +23,12 @@ print "Computing..."
 StartTime = time.time()
 madX = np.array([[np.mean(abs(group['NewXcoord'][:,i] - np.mean(group['NewXcoord'][:,i]))) for i in range(len(group['NewXcoord'][0,:]))] for group in groupedData])
 madY = np.array([[np.mean(abs(group['NewYcoord'][:,i] - np.mean(group['NewYcoord'][:,i]))) for i in range(len(group['NewYcoord'][0,:]))] for group in groupedData])
+madDispl = np.array([[np.mean(abs(group['Displacement'][:,i] - np.mean(group['Displacement'][:,i]))) for i in range(len(group['Displacement'][0,:]))] for group in groupedData])
 print time.time() - StartTime
 print "Finished."
 
 print "Saving..."
 StartTime = time.time()
-sio.savemat("madXY.mat", {'madX' : madX, 'madY' : madY})
+sio.savemat("madXY.mat", {'madX' : madX, 'madY' : madY, "madDispl" : madDispl})
 print time.time() - StartTime
 print "Finished."
