@@ -8,6 +8,7 @@ import sys
 from matplotlib import pyplot as plt
 from sklearn import linear_model
 from operator import itemgetter
+from itertools import groupby
 np.set_printoptions(precision=3, suppress=True, linewidth = 150)
 
 class rw():
@@ -48,7 +49,7 @@ for single in range(2):
     SaveDataArray = []
     for set_ in range(2, 3): # for set_ in range(2, Sets):
         SaveDataLine  = []
-        for step in range(2, 3): # for step in range(1, Sets):
+        for step in range(1, 2): # for step in range(1, Sets):
             gnb = linear_model.BayesianRidge(compute_score = True)
             train, test, labels1, labels2, label1, label2 = [], [], [], [], [], []
             for _, values in enumerate(data[['Displacement', 'DifferenceX', 'DifferenceY', 'Bearing', 'X', 'Y', 'Z', 'Rx', 'Ry', 'Rz', 'DataSet', 'State', 'Type', 'Depth']]):
@@ -84,8 +85,14 @@ for single in range(2):
             # print "Score = {0}% Success".format(gnb.score(test,label1)*100)
 
             print "Predicting the Depth"
-            y_pred2  = gnb.fit(train, labels2).predict(test)
-            y_pred2z = zip(y_pred2, label2)
+            y_pred2            = gnb.fit(train, labels2).predict(test)
+            y_pred2z           = zip(y_pred2, label2)
+            predictions        = sorted(y_pred2z, key=itemgetter(1))
+            groupedPredictions = np.array([list(j) for i,j in groupby(map(list,predictions), itemgetter(1))])
+
+            meanPredictions    = np.array([np.mean(abs(np.subtract([c[0] for c in b], [c[1] for c in b]))) for b in groupedPredictions])
+            stdPredictions     = np.array([np.std(abs(np.subtract([c[0] for c in b], [c[1] for c in b]))) for b in groupedPredictions])
+            xValues = [float(b[0][1])/10 for b in groupedPredictions]
             # print("Number of mislabeled points out of a total %d points : %d" % (test.shape[0], np.array(label2 != y_pred2).sum()))
             print "Score = {0}%, {1}mm, #{2}".format(round(gnb.score(test,label2)*100, 3), float(step)/10, set_-1)
             # print y_pred2z
@@ -112,15 +119,17 @@ for single in range(2):
         y1                = [float(i[0])/10 for i in y_pred2z]
         labels2           = [float(i)/10 for i in label2]
         # toMatlab          = zip(x1, y1, labels2)
-        best_fit          = plt.plot(labels2, labels2, 'r-', label="Correct Classification")
-        Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
-        handles, labels   = ax.get_legend_handles_labels()
+        # best_fit          = plt.plot(labels2, labels2, 'r-', label="Correct Classification")
+        # Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
+        plt.plot(xValues, meanPredictions)
+        plt.plot(xValues, stdPredictions)
+        # handles, labels   = ax.get_legend_handles_labels()
         # fig = plt.figure()
         # ax  = plt.subplot(1,1,1)
         # plt.plot([np.std(i) for i in y_pred2z])
         # rw().writeList2File(os.path.join(directory, Name + "_ML.txt"), toMatlab)
         # print "Saved for Matlab"
-        plt.legend(handles, labels, loc=4)
+        # plt.legend(handles, labels, loc=4)
         plt.grid()
         # plt.savefig(os.path.join(directory, Name + '.png'), dpi=None, facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format=None, transparent=False, bbox_inches=None, pad_inches=0.1, frameon=None)
         plt.show()
