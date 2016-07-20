@@ -3,8 +3,6 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../../libraries/
 from Pillow import rw
 import numpy as np
 import time
-import os
-import sys
 from matplotlib import pyplot as plt
 from sklearn import linear_model
 from operator import itemgetter
