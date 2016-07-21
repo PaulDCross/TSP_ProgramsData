@@ -3,6 +3,7 @@ import os
 from itertools import groupby
 import time
 import scipy.io as sio
+np.set_printoptions(precision=3, suppress=True, linewidth = 150)
 
 def getKey(item):
     return item[0]['Z']

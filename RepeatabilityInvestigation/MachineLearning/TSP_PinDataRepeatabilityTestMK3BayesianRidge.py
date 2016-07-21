@@ -86,11 +86,14 @@ for single in range(2):
             y_pred2            = gnb.fit(train, labels2).predict(test)
             y_pred2z           = zip(y_pred2, label2)
             predictions        = sorted(y_pred2z, key=itemgetter(1))
+            # Group the predictions based on the actual depth
             groupedPredictions = np.array([list(j) for i,j in groupby(map(list,predictions), itemgetter(1))])
-
+            # Calculate the mean and mad of the difference between the values
+            madPredictions     = np.array([abs(np.subtract(abs(np.subtract([c[0] for c in b], [c[1] for c in b])), np.mean(abs(np.subtract([c[0] for c in b], [c[1] for c in b]))))) for b in groupedPredictions])
             meanPredictions    = np.array([np.mean(abs(np.subtract([c[0] for c in b], [c[1] for c in b]))) for b in groupedPredictions])
             stdPredictions     = np.array([np.std(abs(np.subtract([c[0] for c in b], [c[1] for c in b]))) for b in groupedPredictions])
             xValues = [float(b[0][1])/10 for b in groupedPredictions]
+
             # print("Number of mislabeled points out of a total %d points : %d" % (test.shape[0], np.array(label2 != y_pred2).sum()))
             print "Score = {0}%, {1}mm, #{2}".format(round(gnb.score(test,label2)*100, 3), float(step)/10, set_-1)
             # print y_pred2z
@@ -119,6 +122,7 @@ for single in range(2):
         # toMatlab          = zip(x1, y1, labels2)
         # best_fit          = plt.plot(labels2, labels2, 'r-', label="Correct Classification")
         # Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
+        plt.plot(xValues, madPredictions)
         plt.plot(xValues, meanPredictions)
         plt.plot(xValues, stdPredictions)
         # handles, labels   = ax.get_legend_handles_labels()
