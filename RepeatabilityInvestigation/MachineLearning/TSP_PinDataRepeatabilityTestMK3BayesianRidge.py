@@ -89,7 +89,7 @@ for single in range(2):
             # Group the predictions based on the actual depth
             groupedPredictions = np.array([list(j) for i,j in groupby(map(list,predictions), itemgetter(1))])
             # Calculate the mean and mad of the difference between the values
-            madPredictions     = np.array([np.mean(abs(     np.subtract(    abs(np.subtract([c[0] for c in b], [c[1] for c in b]))  ,   np.mean(abs(np.subtract([c[0] for c in b], [c[1] for c in b]))))    )) for b in groupedPredictions])
+            madPredictions     = np.array([np.mean(abs(np.subtract(abs(np.subtract([c[0] for c in b], [c[1] for c in b])), np.mean(abs(np.subtract([c[0] for c in b], [c[1] for c in b])))))) for b in groupedPredictions])
             meanPredictions    = np.array([np.mean(abs(np.subtract([c[0] for c in b], [c[1] for c in b]))) for b in groupedPredictions])
             stdPredictions     = np.array([np.std(abs(np.subtract([c[0] for c in b], [c[1] for c in b]))) for b in groupedPredictions])
             xValues = [float(b[0][1])/10 for b in groupedPredictions]
@@ -122,7 +122,7 @@ for single in range(2):
         # toMatlab          = zip(x1, y1, labels2)
         # best_fit          = plt.plot(labels2, labels2, 'r-', label="Correct Classification")
         # Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
-        MAD  = plt.plot(xValues, madPredictions, label="MAD of the difference between actual and predicted")
+        MAD  = plt.plot(xValues, madPredictions, label="Deviation of the data from the mean")
         mean = plt.plot(xValues, meanPredictions, label="Mean difference between actual and predicted")
         # std  = plt.plot(xValues, stdPredictions, label="Std")
         handles, labels   = ax.get_legend_handles_labels()
