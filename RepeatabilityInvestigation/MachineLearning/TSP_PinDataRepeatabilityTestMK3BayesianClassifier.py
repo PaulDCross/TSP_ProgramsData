@@ -45,7 +45,7 @@ savingGraph   = 1
 Sets          = int(1 + len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
 for single in range(2):
     SaveDataArray = []
-    for set_ in range(2, 3): # for set_ in range(2, Sets):
+    for set_ in range(10, 11): # for set_ in range(2, Sets):
         SaveDataLine  = []
         for step in range(1, 2): # for step in range(1, Sets):
             gnb = GaussianNB()
