@@ -3,11 +3,11 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../../libraries/
 from Pillow import rw
 import numpy as np
 import time
-import os
-import sys
 from matplotlib import pyplot as plt
+from operator import itemgetter
+from itertools import groupby
 from sklearn.naive_bayes import GaussianNB
-np.set_printoptions(precision=3, suppress=True)
+np.set_printoptions(precision=3, suppress=True, linewidth = 150)
 
 class rw():
     def readFile2List(self, textFile):
@@ -27,22 +27,22 @@ def makedir(DIR):
         os.makedirs(DIR)
         time.sleep(0.5)
 
-ProgramsData= os.path.join("..", "..", "..", "Python", "TSP_Testing", "TSP_Testing", "ProgramsData")
-ztool         = 167.5
-zcoordinate   = 358.0
-directory   = os.path.join("..", "..", "PinDataResults", "NewPillowRepeatabilityTestTypeResetBayesianRidge", "EE{0}".format(ztool))
+ProgramsData = os.path.join("..", "..", "..", "Python", "TSP_Testing", "TSP_Testing", "ProgramsData")
+ztool        = 167.5
+zcoordinate  = 358.0
+directory    = os.path.join("..", "..", "PinDataResults", "NewPillowRepeatabilityTestTypeResetBayesianRidge", "EE{0}".format(ztool))
 makedir(directory)
-DIR           = os.path.join(ProgramsData, "TSP_Pictures", "NewPillowRepeatabilityTest", "EE{0}".format(ztool), "{0}mm".format(zcoordinate))
-# data          = np.load(os.path.join(DIR, "Otsudataline110.npy"))
-data          = np.load(os.path.join(DIR, "dataline110.npy"))
+DIR          = os.path.join(ProgramsData, "TSP_Pictures", "NewPillowRepeatabilityTest", "EE{0}".format(ztool), "{0}mm".format(zcoordinate))
+# data       = np.load(os.path.join(DIR, "Otsudataline110.npy"))
+data         = np.load(os.path.join(DIR, "dataline110.npy"))
 print "Loaded Data"
-names         = data.dtype.names
-Column0       = names.index('Displacement')
-Column1       = names.index('DifferenceX')
-Column2       = names.index('DifferenceY')
-saving        = 0
-savingGraph   = 1
-Sets          = int(1 + len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
+names        = data.dtype.names
+Column0      = names.index('Displacement')
+Column1      = names.index('DifferenceX')
+Column2      = names.index('DifferenceY')
+saving       = 0
+savingGraph  = 1
+Sets         = int(1 + len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
 for single in range(2):
     SaveDataArray = []
     for set_ in range(10, 11): # for set_ in range(2, Sets):
@@ -77,23 +77,32 @@ for single in range(2):
             label2  = np.array(label2)
             print len(train), len(test)
             # print "Predicting the Movement Type"
-            y_pred1  = gnb.fit(train, labels1).predict(test)
-            y_pred1z = zip(y_pred1, label1)
+            # y_pred1  = gnb.fit(train, labels1).predict(test)
+            # y_pred1z = zip(y_pred1, label1)
             # print("Number of mislabeled points out of a total %dpoints : %d" % (test.shape[0], np.array(label1 != y_pred1).sum()))
             # print "Score = {0}% Success".format(gnb.score(test,label1)*100)
 
             print "Predicting the Depth"
-            y_pred2  = gnb.fit(train, labels2).predict(test)
-            y_pred2z = zip(y_pred2, label2)
+            y_pred2            = gnb.fit(train, labels2).predict(test)
+            y_pred2z           = zip(y_pred2, label2)
+
+            predictions        = sorted(y_pred2z, key=itemgetter(1))
+            # Group the predictions based on the actual depth
+            groupedPredictions = np.array([list(j) for i,j in groupby(map(list,predictions), itemgetter(1))])
+            # Calculate the mean and mad of the difference between the values
+            madPredictions     = np.array([np.mean(abs(np.subtract(abs(np.subtract([c[0] for c in b], [c[1] for c in b])), np.mean(abs(np.subtract([c[0] for c in b], [c[1] for c in b])))))) for b in groupedPredictions])
+            meanPredictions    = np.array([np.mean(abs(np.subtract([c[0] for c in b], [c[1] for c in b]))) for b in groupedPredictions])
+            xValues            = [float(b[0][1])/10 for b in groupedPredictions]
+
             # print("Number of mislabeled points out of a total %d points : %d" % (test.shape[0], np.array(label2 != y_pred2).sum()))
             print "Score = {0}%, {1}mm, #{2}".format(round(gnb.score(test,label2)*100, 3), float(step)/10, set_-1)
             # print y_pred2z
             SaveDataLine.append(gnb.score(test,label2))
         SaveDataArray.append(SaveDataLine)
     if single:
-        Name = "TSP_Repeat_DisplReset"
+        Name = "TSP_Repeat_DisplResetBayesianClassifier"
     else:
-        Name = "TSP_Repeat_DistX_DistYReset"
+        Name = "TSP_Repeat_DistX_DistYResetBayesianClassifier"
     # if single:
     #     Name = "TSP_Repeatability_Displacement_Otsu"
     # else:
@@ -105,15 +114,21 @@ for single in range(2):
     if savingGraph:
         fig = plt.figure()
         ax  = plt.subplot(1,1,1)
-        plt.title('Training Sets: {0}    Testing Sets: {1}    Step distance: {2}mm'.format(set_-1, Sets-set_, float(step)/10))
+        plt.title(Name + '\nTraining Sets: {0}    Testing Sets: {1}    Step distance: {2}mm'.format(set_-1, Sets-set_, float(step)/10))
         plt.xlabel("Actual depth from start position, (mm)")
         plt.ylabel("Predicted depth from start position, (mm)")
+        # plt.ylabel("Displacement, (mm)")
+        plt.minorticks_on()
         x1                = [float(i[1])/10 for i in y_pred2z]
         y1                = [float(i[0])/10 for i in y_pred2z]
         labels2           = [float(i)/10 for i in label2]
-        toMatlab          = zip(x1, y1, labels2)
+        # toMatlab          = zip(x1, y1, labels2)
         best_fit          = plt.plot(labels2, labels2, 'r-', label="Correct Classification")
         Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
+
+        # mean = plt.plot(xValues, meanPredictions, label="Mean difference between actual and predicted")
+        # MAD  = plt.plot(xValues, madPredictions, label="Deviation of the data from the mean")
+
         handles, labels   = ax.get_legend_handles_labels()
         # rw().writeList2File(os.path.join(directory, Name + "_ML.txt"), toMatlab)
         # print "Saved for Matlab"
