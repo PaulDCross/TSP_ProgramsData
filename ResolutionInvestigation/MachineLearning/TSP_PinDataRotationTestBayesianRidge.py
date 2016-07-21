@@ -40,26 +40,27 @@ for single in range(2):
             gnb = linear_model.BayesianRidge()
             train, test, labels1, labels2, labels3, labels4, label1, label2, label3, label4 = [], [], [], [], [], [], [], [], [], []
             for _, values in enumerate(data[['Displacement', 'DifferenceX', 'DifferenceY', 'Bearing', 'X', 'Y', 'Z', 'Rx', 'Ry', 'Rz', 'DataSet', 'State', 'Type', 'Sign']]):
-                if np.count_nonzero(values['State']) > 4:
-                    if (round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0)) % step == 0:
-                        if 0 < values['DataSet'][0] < set_:
-                            if single:
-                                train.append(np.concatenate(((values[names[Column0]]*10).astype(int), )))
+                if values['Type'][0] == 'Rx':
+                    if np.count_nonzero(values['State']) > 4:
+                        if (round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0)) % step == 0:
+                            if 0 < values['DataSet'][0] < set_:
+                                if single:
+                                    train.append(np.concatenate(((values[names[Column0]]*10).astype(int), )))
+                                else:
+                                    train.append(np.concatenate(((values[names[Column1]]*10).astype(int), (values[names[Column2]]*10).astype(int))))
+                                labels1.append(values['Type'][0])
+                                labels2.append(values['Sign'][0])
+                                labels3.append(str(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0))) + values['Type'][0] + values['Sign'][0])
+                                labels4.append(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0)))
                             else:
-                                train.append(np.concatenate(((values[names[Column1]]*10).astype(int), (values[names[Column2]]*10).astype(int))))
-                            labels1.append(values['Type'][0])
-                            labels2.append(values['Sign'][0])
-                            labels3.append(str(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0))) + values['Type'][0] + values['Sign'][0])
-                            labels4.append(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0)))
-                        else:
-                            if single:
-                                test.append(np.concatenate(((values[names[Column0]]*10).astype(int), )))
-                            else:
-                                test.append(np.concatenate(((values[names[Column1]]*10).astype(int), (values[names[Column2]]*10).astype(int))))
-                            label1.append(values['Type'][0])
-                            label2.append(values['Sign'][0])
-                            label3.append(str(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0))) + values['Type'][0] + values['Sign'][0])
-                            label4.append(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0)))
+                                if single:
+                                    test.append(np.concatenate(((values[names[Column0]]*10).astype(int), )))
+                                else:
+                                    test.append(np.concatenate(((values[names[Column1]]*10).astype(int), (values[names[Column2]]*10).astype(int))))
+                                label1.append(values['Type'][0])
+                                label2.append(values['Sign'][0])
+                                label3.append(str(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0))) + values['Type'][0] + values['Sign'][0])
+                                label4.append(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0)))
             print "\nSetting up train and test sets."
             train   = np.array(train)
             test    = np.array(test)
@@ -120,10 +121,10 @@ for single in range(2):
         y1                = [float(i[0])/10 for i in y_pred3z]
         labels4           = [float(i)/10 for i in label4]
         # toMatlab          = zip(x1, y1, labels4)
-        # best_fit          = plt.plot(labels4, labels4, 'r-', label="Correct Classification")
-        # Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
-        MAD  = plt.plot(xValues, madPredictions, label="Deviation of the data from the mean")
-        mean = plt.plot(xValues, meanPredictions, label="Mean difference between actual and predicted")
+        best_fit          = plt.plot(labels4, labels4, 'r-', label="Correct Classification")
+        Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
+        # MAD  = plt.plot(xValues, madPredictions, label="Deviation of the data from the mean")
+        # mean = plt.plot(xValues, meanPredictions, label="Mean difference between actual and predicted")
         handles, labels   = ax.get_legend_handles_labels()
         # rw.writeList2File(os.path.join(directory, Name + "_ML.txt"), toMatlab)
         # print "Saved for Matlab"
