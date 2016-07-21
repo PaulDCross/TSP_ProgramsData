@@ -89,7 +89,7 @@ for single in range(2):
             # Group the predictions based on the actual depth
             groupedPredictions = np.array([list(j) for i,j in groupby(map(list,predictions), itemgetter(1))])
             # Calculate the mean and mad of the difference between the values
-            madPredictions     = np.array([abs(np.subtract(abs(np.subtract([c[0] for c in b], [c[1] for c in b])), np.mean(abs(np.subtract([c[0] for c in b], [c[1] for c in b]))))) for b in groupedPredictions])
+            madPredictions     = np.array([np.mean(abs(     np.subtract(    abs(np.subtract([c[0] for c in b], [c[1] for c in b]))  ,   np.mean(abs(np.subtract([c[0] for c in b], [c[1] for c in b]))))    )) for b in groupedPredictions])
             meanPredictions    = np.array([np.mean(abs(np.subtract([c[0] for c in b], [c[1] for c in b]))) for b in groupedPredictions])
             stdPredictions     = np.array([np.std(abs(np.subtract([c[0] for c in b], [c[1] for c in b]))) for b in groupedPredictions])
             xValues = [float(b[0][1])/10 for b in groupedPredictions]
@@ -113,7 +113,7 @@ for single in range(2):
     if savingGraph:
         fig = plt.figure()
         ax  = plt.subplot(1,1,1)
-        plt.title('Training Sets: {0}    Testing Sets: {1}    Step distance: {2}mm'.format(set_-1, Sets-set_, float(step)/10))
+        plt.title(Name + '\nTraining Sets: {0}    Testing Sets: {1}    Step distance: {2}mm'.format(set_-1, Sets-set_, float(step)/10))
         plt.xlabel("Actual depth from start position, (mm)")
         plt.ylabel("Predicted depth from start position, (mm)")
         x1                = [float(i[1])/10 for i in y_pred2z]
@@ -122,16 +122,16 @@ for single in range(2):
         # toMatlab          = zip(x1, y1, labels2)
         # best_fit          = plt.plot(labels2, labels2, 'r-', label="Correct Classification")
         # Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
-        plt.plot(xValues, madPredictions)
-        plt.plot(xValues, meanPredictions)
-        plt.plot(xValues, stdPredictions)
-        # handles, labels   = ax.get_legend_handles_labels()
+        MAD  = plt.plot(xValues, madPredictions, label="MAD of the difference between actual and predicted")
+        mean = plt.plot(xValues, meanPredictions, label="Mean difference between actual and predicted")
+        # std  = plt.plot(xValues, stdPredictions, label="Std")
+        handles, labels   = ax.get_legend_handles_labels()
         # fig = plt.figure()
         # ax  = plt.subplot(1,1,1)
         # plt.plot([np.std(i) for i in y_pred2z])
         # rw().writeList2File(os.path.join(directory, Name + "_ML.txt"), toMatlab)
         # print "Saved for Matlab"
-        # plt.legend(handles, labels, loc=4)
+        plt.legend(handles, labels, loc=1)
         plt.grid()
         # plt.savefig(os.path.join(directory, Name + '.png'), dpi=None, facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format=None, transparent=False, bbox_inches=None, pad_inches=0.1, frameon=None)
         plt.show()
