@@ -55,7 +55,7 @@ for fold in range(Start, numFolders):
             if Record:
                 # Define the codec and create VideoWriter object
                 fourcc = cv2.VideoWriter_fourcc(*'DIVX')
-                out    = cv2.VideoWriter(os.path.join(directory, 'TSP' + Types[Type] + sign + "I" + '.avi'),fourcc, 10.0, (1573,502))
+                out    = cv2.VideoWriter(os.path.join(directory, 'TSP' + Types[Type] + sign + "I" + '.avi'),fourcc, 20.0, (1578,512))
                 if extrnl:
                     # Define the codec and create VideoWriter object
                     fourcc = cv2.VideoWriter_fourcc(*'DIVX')
@@ -104,7 +104,7 @@ for fold in range(Start, numFolders):
                 # Find the coordinates of the pins in the first image
                 data1         = init.initialiseData(xyn)
 
-            for picture in range(first, last):
+            for picture in range(first, last+1):
                 pathname2    = os.path.join(PictureFolder, "%003d" % picture) + ".png"
                 SecondImage  = cv2.imread(pathname2)
                 frame        = copy.deepcopy(SecondImage)
@@ -147,19 +147,6 @@ for fold in range(Start, numFolders):
                             makedir(Directory)
                             rw().writeList2File(os.path.join(Directory, "Data_%d.txt" % picture), DATA)
 
-                        # for i in range(len(DATAarray[:]) - 1):            # Number of rows.
-                        #     for j in range(len(DATAarray[i][:]) - 1):     # Number of columns in each row.
-                        #         # Calculate the Distance between the pins
-                        #         d1y = math.sqrt((int(DATAarray[i + 1][j][1]) - int(DATAarray[i][j][1])) ** 2 + (int(DATAarray[i + 1][j][2]) - int(DATAarray[i][j][2])) ** 2)
-                        #         d1x = math.sqrt((int(DATAarray[i][j + 1][1]) - int(DATAarray[i][j][1])) ** 2 + (int(DATAarray[i][j + 1][2]) - int(DATAarray[i][j][2])) ** 2)
-                        #         d2y = math.sqrt((int(DATAarray[i + 1][j][4]) - int(DATAarray[i][j][4])) ** 2 + (int(DATAarray[i + 1][j][5]) - int(DATAarray[i][j][5])) ** 2)
-                        #         d2x = math.sqrt((int(DATAarray[i][j + 1][4]) - int(DATAarray[i][j][4])) ** 2 + (int(DATAarray[i][j + 1][5]) - int(DATAarray[i][j][5])) ** 2)
-                        #         # colour.append((d2x-d1x)); colour.append((d2y-d1y))
-                        #         # m = ((255 - 100) / (max(colour) - min(colour)))
-                        #         # cv2.line(Frame, (int(DATAarray[i][j][4]), int(DATAarray[i][j][5])), (int(DATAarray[i + 1][j][4]), int(DATAarray[i + 1][j][5])), (0, m * abs(d2y - d1y) + 100, 0), 5)
-                        #         # cv2.line(Frame, (int(DATAarray[i][j][4]), int(DATAarray[i][j][5])), (int(DATAarray[i][j + 1][4]), int(DATAarray[i][j + 1][5])), (0, m * abs(d2x - d1x) + 100, 0), 5)
-                        #         # cv2.rectangle(BearingImage, (int(DATAarray[i-1][j][13]), int(DATAarray[i-1][j][14])), (int(DATAarray[i][j-1][13]), int(DATAarray[i][j-1][14])), (255,255,255), -1)
-
                         for _, data in enumerate(DATA):
                             # Drawing the bearings
                             colour.append(data['DifferencePinSize'])
@@ -176,9 +163,9 @@ for fold in range(Start, numFolders):
                             cv2.line(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int((data['OriginalXcoord']) + 10 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) + 10 * math.cos(math.radians(data['Bearing'])))), (mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1), 1)
                             # cv2.line(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int((data['OriginalXcoord']) - spiderline * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) - spiderline * math.cos(math.radians(data['Bearing'])))), (mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1), 1)
                             # cv2.circle(BearingImage, (int((data['OriginalXcoord']) - 100 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) - 100 * math.cos(math.radians(data['Bearing'])))), 1, (255,255,255))
-                            cv2.circle(BearingImage, (int((data['OriginalXcoord']) + 10 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) + 10 * math.cos(math.radians(data['Bearing'])))), 1, (mPD * abs(data['Displacement']) + yy1, 0, 0), 1)
+                            cv2.circle(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), 2, (0, 0, mPD * abs(data['Displacement']) + yy1), -1)
                             cv2.putText(BearingImage, "%.3f" % data['Displacement'], (int(data['OriginalXcoord']) - 14, int(data['OriginalYcoord']) - 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, mPD * abs(data['Displacement']) + yy1, 0), 1)
-                            cv2.putText(BearingImage, "%.3f" % data['DifferencePinSize'], (int(data['OriginalXcoord']) - 14, int(data['OriginalYcoord']) + 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, mPS * abs(data['DifferencePinSize']) + yy1), 1)
+                            cv2.putText(BearingImage, str(data['Pin']), (int(data['OriginalXcoord']) - 14, int(data['OriginalYcoord']) + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
                             # Draw on the Image
                             cv2.putText(Frame, "%d" % data['Pin'], (int(data['NewXcoord']) - 7, int(data['NewYcoord']) - 7), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1, 8)
 
@@ -187,7 +174,7 @@ for fold in range(Start, numFolders):
 
                         frame_with_box[y1:y2, x1:x2] = Frame
                         # Creates a black image and sets each pixel value as white.
-                        width = 60
+                        width    = 60
                         whiteBar = np.zeros((width, frame_with_box.shape[1], 3), np.uint8); whiteBar.fill(255)
                         # Sets the region specified to be equal to the white image create above.
                         frame_with_box[0:width, 0:frame_with_box.shape[1]] = whiteBar
@@ -200,16 +187,28 @@ for fold in range(Start, numFolders):
                         cv2.putText(BlackImage, str(ls[index][picture]), ((x2-x1)-textsize[0][0], width-15), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
                         video        = np.concatenate((BlackImage, frame_with_box), axis=1)
 
+                        blackBar     = np.zeros((10, BearingImage.shape[1], 3), np.uint8)
+                        BearingImage = np.concatenate((BearingImage, blackBar), axis=0)
                         extraHeight  = abs(BearingImage.shape[0] - extrnalImage.shape[0])/2
                         blackBar     = np.zeros((extraHeight, extrnalImage.shape[1], 3), np.uint8)
                         extrnalImage = np.concatenate((blackBar, extrnalImage, blackBar), axis=0)
+                        vWhiteBar      = np.zeros((extrnalImage.shape[0], 5, 3), np.uint8); vWhiteBar.fill(255)
+                        extrnalImage = np.concatenate((vWhiteBar, extrnalImage), axis=1)
+
                         video1       = np.concatenate((BearingImage, extrnalImage), axis=1)
-                        cv2.putText(video1, '[X, Y, Z, Roll, Pitch, Yaw]', (BearingImage.shape[1], 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
-                        cv2.putText(video1, str((lambda l: [round(i,1) for i in l])(map(float,ls[index][picture]))), (BearingImage.shape[1], 40), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
-                        cv2.putText(video1, 'Displacement from reference: ', (BearingImage.shape[1], 100), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
-                        cv2.putText(video1, str(DisplFromRef) + ' Degrees', (BearingImage.shape[1], 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1)
+                        cv2.putText(video1, '[X, Y, Z, Roll, Pitch, Yaw]', (BearingImage.shape[1] + 10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
+                        cv2.putText(video1, str((lambda l: [round(i,1) for i in l])(map(float,ls[index][picture]))), (BearingImage.shape[1] + 10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
+                        cv2.putText(video1, 'Displacement from reference: ', (BearingImage.shape[1] + 10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
+                        cv2.putText(video1, str(DisplFromRef) + ' Degrees', (BearingImage.shape[1] + 10, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1)
+
                         if Display:
                             cv2.imshow("Camera", video1)
+                            if picture == 2:
+                                referenceImage = video1
+                            if picture == 102:
+                                whiteBar   = np.zeros((5, referenceImage.shape[1], 3), np.uint8); whiteBar.fill(255)
+                                comparison = np.concatenate((referenceImage, whiteBar, video1), axis=0)
+                                cv2.imwrite(os.path.join(directory, "TSP"+Types[Type]+sign+'10mm'+'.png'), comparison)
                             # cv2.imshow("Camera2", BearingImage)
                             # cv2.imshow("Camera3", extrnalImage)
                             # cv2.imshow("ROI", ROI)
