@@ -45,7 +45,7 @@ savingGraph = 1
 Sets        = int(1 + len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
 for single in range(2):
     SaveDataArray = []
-    for set_ in range(2, 3): # for set_ in range(2, Sets):
+    for set_ in range(10, 11): # for set_ in range(2, Sets):
         SaveDataLine  = []
         for step in range(1, 2): # for step in range(1, Sets):
             gnb = linear_model.BayesianRidge(compute_score = True)
@@ -115,19 +115,19 @@ for single in range(2):
         ax  = plt.subplot(1,1,1)
         plt.title(Name + '\nTraining Sets: {0}    Testing Sets: {1}    Step distance: {2}mm'.format(set_-1, Sets-set_, float(step)/10))
         plt.xlabel("Actual depth from start position, (mm)")
-        plt.ylabel("Predicted depth from start position, (mm)")
+        plt.ylabel("Predicted Angle, (Degrees)")
+        # plt.ylabel("Displacement, (mm)")
+        plt.minorticks_on()
         x1                = [float(i[1])/10 for i in y_pred2z]
         y1                = [float(i[0])/10 for i in y_pred2z]
         labels2           = [float(i)/10 for i in label2]
         # toMatlab          = zip(x1, y1, labels2)
-        # best_fit          = plt.plot(labels2, labels2, 'r-', label="Correct Classification")
-        # Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
-        MAD  = plt.plot(xValues, madPredictions, label="Deviation of the data from the mean")
-        mean = plt.plot(xValues, meanPredictions, label="Mean difference between actual and predicted")
+        best_fit          = plt.plot(labels2, labels2, 'r-', label="Correct Classification")
+        Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
+        # mean = plt.plot(xValues, meanPredictions, label="Mean difference between actual and predicted")
+        # MAD  = plt.plot(xValues, madPredictions, label="Deviation of the data from the mean")
         # std  = plt.plot(xValues, stdPredictions, label="Std")
         handles, labels   = ax.get_legend_handles_labels()
-        # fig = plt.figure()
-        # ax  = plt.subplot(1,1,1)
         # plt.plot([np.std(i) for i in y_pred2z])
         # rw().writeList2File(os.path.join(directory, Name + "_ML.txt"), toMatlab)
         # print "Saved for Matlab"

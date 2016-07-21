@@ -34,7 +34,7 @@ savingGraph = 1
 Sets        = int(1 + len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
 for single in range(2):
     SaveDataArray = []
-    for set_ in range(2, 3): # for set_ in range(2, Sets):
+    for set_ in range(10, 11): # for set_ in range(2, Sets):
         SaveDataLine  = []
         for step in range(1, 2): # for step in range(1, Sets):
             gnb = linear_model.BayesianRidge()
@@ -98,9 +98,9 @@ for single in range(2):
     # else:
     #     Name = "TSP_Rotation_DistanceX_and_DistanceY"
     if single:
-        Name = "TSP_Rotation_DispReset"
+        Name = "TSP_Rotation_DispResetBayesianRidge"
     else:
-        Name = "TSP_Rotation_DistX_DistYReset"
+        Name = "TSP_Rotation_DistX_DistYResetBayesianRidge"
     # if single:
     #     Name = "TSP_Rotation_Displacement_Otsu"
     # else:
@@ -115,16 +115,17 @@ for single in range(2):
         ax  = plt.subplot(1,1,1)
         plt.title(Name + '\nTraining Sets: {0}    Testing Sets: {1}    Step distance: {2}mm'.format(set_-1, Sets-set_, float(step)/10))
         plt.xlabel("Actual Angle, (Degrees)")
+        # plt.ylabel("Angular Displacement, (Degrees)")
         plt.ylabel("Predicted Angle, (Degrees)")
-
+        plt.minorticks_on()
         x1                = [float(i[1])/10 for i in y_pred3z]
         y1                = [float(i[0])/10 for i in y_pred3z]
         labels4           = [float(i)/10 for i in label4]
         # toMatlab          = zip(x1, y1, labels4)
         best_fit          = plt.plot(labels4, labels4, 'r-', label="Correct Classification")
         Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
-        # MAD  = plt.plot(xValues, madPredictions, label="Deviation of the data from the mean")
         # mean = plt.plot(xValues, meanPredictions, label="Mean difference between actual and predicted")
+        # MAD  = plt.plot(xValues, madPredictions, label="Deviation of the data from the mean")
         handles, labels   = ax.get_legend_handles_labels()
         # rw.writeList2File(os.path.join(directory, Name + "_ML.txt"), toMatlab)
         # print "Saved for Matlab"
@@ -134,7 +135,3 @@ for single in range(2):
         plt.grid()
         # plt.savefig(os.path.join(directory, Name + '.png'), dpi=None, facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format=None, transparent=False, bbox_inches=None, pad_inches=0.1, frameon=None)
         plt.show()
-
-
-
-
