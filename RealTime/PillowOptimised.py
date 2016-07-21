@@ -106,7 +106,7 @@ class Pillow:
 
             bearing = round(bearing*(180/math.pi),1)
             distance = round(math.pow(distance,2),1)
-            self.DistanceBearing.append([data1[i][0], state, dx[i], dy[i], distance, bearing,changeinSize])
+            self.DistanceBearing.append([data1[i][0], state, dx[i], dy[i], distance, bearing, changeinSize])
             self.DistanceBearing.sort(key = itemgetter(0),reverse = False)
 
             if len(self.DistanceBearing) == L2:

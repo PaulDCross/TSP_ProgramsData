@@ -18,7 +18,7 @@ def makedir(DIR):
 np.set_printoptions(precision=3, suppress=True, linewidth = 150)
 
 Display        = 1
-Record         = 0
+Record         = 1
 SaveNumpy      = 0
 SaveIndividual = 0
 extrnl         = 0
@@ -55,11 +55,11 @@ for fold in range(Start, numFolders):
             if Record:
                 # Define the codec and create VideoWriter object
                 fourcc = cv2.VideoWriter_fourcc(*'DIVX')
-                out    = cv2.VideoWriter(os.path.join(MovementType, 'TSPMk2' + Types[Type] + sign + "I" + '.avi'),fourcc, 10.0, (2117,656))
+                out    = cv2.VideoWriter(os.path.join(directory, 'TSP' + Types[Type] + sign + "I" + '.avi'),fourcc, 10.0, (1573,502))
                 if extrnl:
                     # Define the codec and create VideoWriter object
                     fourcc = cv2.VideoWriter_fourcc(*'DIVX')
-                    out2    = cv2.VideoWriter(os.path.join(MovementType, 'TSP' + Types[Type] + sign + "E" + '.avi'),fourcc, 30.0, (640,480))
+                    out2    = cv2.VideoWriter(os.path.join(MovementType, 'TSPSanja' + Types[Type] + sign + "E" + '.avi'),fourcc, 30.0, (640,480))
 
             #############################################################################################
 
@@ -70,14 +70,14 @@ for fold in range(Start, numFolders):
             for _,i in enumerate(lineNums):
                 if _+1 < 4:
                     with open(os.path.join(directory, "LogFile.txt")) as File:
-                        resultlist = [line.split(":  [[")[-1].split("]] ")[0].split("], [")[0].split(", ") + line.split(":  [[")[-1].split("]] ")[0].split("], [")[1].split(", ") for line in islice(Textfile, lineNums[_]+5, lineNums[_+1], 3)]
+                        resultlist = [line.split(":  [[")[-1].split("]]")[0].split("], [")[0].split(", ") + line.split(":  [[")[-1].split("]]")[0].split("], [")[1].split(", ") for line in islice(Textfile, lineNums[_]+2, lineNums[_+1], 3)]
                         resultlist.insert(0, [Textfile[lineNums[_]].split("\\")[-2], Textfile[lineNums[_]].split("\\")[-1][0][0]])
                         ls.append(resultlist)
                         if [Types[Type], sign] in resultlist:
                             index = len(ls)-1
                 else:
                     with open(os.path.join(directory, "LogFile.txt")) as File:
-                        resultlist = [line.split(":  [[")[-1].split("]] ")[0].split("], [")[0].split(", ") + line.split(":  [[")[-1].split("]] ")[0].split("], [")[1].split(", ") for line in islice(Textfile, lineNums[_]+5, None, 3)]
+                        resultlist = [line.split(":  [[")[-1].split("]]")[0].split("], [")[0].split(", ") + line.split(":  [[")[-1].split("]]")[0].split("], [")[1].split(", ") for line in islice(Textfile, lineNums[_]+2, None, 3)]
                         del resultlist[-1]
                         resultlist.insert(0, [Textfile[lineNums[_]].split("\\")[-2], Textfile[lineNums[_]].split("\\")[-1][0][0]])
                         ls.append(resultlist)
@@ -127,6 +127,11 @@ for fold in range(Start, numFolders):
                         Frame               = cv2.drawKeypoints(Frame, keypoints, np.array([]), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
                         data2               = rec.getDataSet2(keypoints, xyn)
                         DistanceBearing     = rec.measurements(data1, data2, len(keypoints))
+                        if Types[Type] == 'Rx':
+                            DisplFromRef    = abs(abs(float(ls[index][picture][3])) - abs(float(ls[index][1][3])))
+                        elif Types[Type] == 'Ry':
+                            DisplFromRef    = abs(abs(float(ls[index][picture][4])) - abs(float(ls[index][1][4])))
+                        # print DisplFromRef
                         DATA                = np.array([tuple(data) for data in [data1[i] + data2[i][1:] + DistanceBearing[i][1:] + [directory[-2:]] + [first] + [picture] + [float(DIR.split('\\')[-1][:-2])] + [ls[index][picture][0]] + [ls[index][picture][1]] + [ls[index][picture][2]] + [ls[index][picture][3]] + [ls[index][picture][4]] + [ls[index][picture][5]] + [Types[Type]] + [sign] for i in xrange(len(keypoints))]], dtype=[('Pin','i4'), ('OriginalXcoord','f4'), ('OriginalYcoord','f4'), ('OriginalPinSize','f4'), ('NewXcoord','f4'), ('NewYcoord','f4'), ('NewPinSize','f4'), ('State','bool'), ('DifferenceX','f4'), ('DifferenceY','f4'), ('Displacement','f4'), ('Bearing','f4'), ('DifferencePinSize','f4'), ('DataSet','i4'), ('PastImage','i4'), ('PresentImage','i4'), ('Height', 'f4'), ('X','f4'), ('Y','f4'), ('Z','f4'), ('Rx','f4'), ('Ry','f4'), ('Rz','f4'), ('Type', 'S4'), ('Sign', 'S4')])
                         if A == 0:
                             array1          = DATA
@@ -156,47 +161,29 @@ for fold in range(Start, numFolders):
                         #         # cv2.rectangle(BearingImage, (int(DATAarray[i-1][j][13]), int(DATAarray[i-1][j][14])), (int(DATAarray[i][j-1][13]), int(DATAarray[i][j-1][14])), (255,255,255), -1)
 
                         for _, data in enumerate(DATA):
-                            if data['State']: # Draw the Line
-                                # Drawing the bearings
-                                colour.append(data['DifferencePinSize'])
-                                yy2         = 255
-                                yy1         = 20
-                                # pinSizeX2 = max(colour)
-                                # pinSizeX1 = min(colour)
-                                pinSizeX2   = 3.0
-                                pinSizeX1   = 0.0
-                                pinDistX2   = 10.0
-                                pinDistX1   = 0.0
-                                mPS         = ((yy2 - yy1) / (pinSizeX2 - pinSizeX1))
-                                mPD         = ((yy2 - yy1) / (pinDistX2 - pinDistX1))
-                                # linex1 = int(DATA[_]['OriginalXcoord'])
-                                # liney1 = int(DATA[_]['OriginalYcoord'])
-                                # linex2 = int((DATA[_]['OriginalXcoord']) - 300 * math.sin(math.radians(DATA[_]['Bearing'])))
-                                # liney2 = int((DATA[_]['OriginalYcoord']) - 300 * math.cos(math.radians(DATA[_]['Bearing'])))
+                            # Drawing the bearings
+                            colour.append(data['DifferencePinSize'])
+                            yy2         = 255
+                            yy1         = 20
+                            # pinSizeX2 = max(colour)
+                            # pinSizeX1 = min(colour)
+                            pinSizeX2   = 3.0
+                            pinSizeX1   = 0.0
+                            pinDistX2   = 10.0
+                            pinDistX1   = 0.0
+                            mPS         = ((yy2 - yy1) / (pinSizeX2 - pinSizeX1))
+                            mPD         = ((yy2 - yy1) / (pinDistX2 - pinDistX1))
+                            cv2.line(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int((data['OriginalXcoord']) + 10 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) + 10 * math.cos(math.radians(data['Bearing'])))), (mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1), 1)
+                            # cv2.line(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int((data['OriginalXcoord']) - spiderline * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) - spiderline * math.cos(math.radians(data['Bearing'])))), (mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1), 1)
+                            # cv2.circle(BearingImage, (int((data['OriginalXcoord']) - 100 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) - 100 * math.cos(math.radians(data['Bearing'])))), 1, (255,255,255))
+                            cv2.circle(BearingImage, (int((data['OriginalXcoord']) + 10 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) + 10 * math.cos(math.radians(data['Bearing'])))), 1, (mPD * abs(data['Displacement']) + yy1, 0, 0), 1)
+                            cv2.putText(BearingImage, "%.3f" % data['Displacement'], (int(data['OriginalXcoord']) - 14, int(data['OriginalYcoord']) - 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, mPD * abs(data['Displacement']) + yy1, 0), 1)
+                            cv2.putText(BearingImage, "%.3f" % data['DifferencePinSize'], (int(data['OriginalXcoord']) - 14, int(data['OriginalYcoord']) + 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, mPS * abs(data['DifferencePinSize']) + yy1), 1)
+                            # Draw on the Image
+                            cv2.putText(Frame, "%d" % data['Pin'], (int(data['NewXcoord']) - 7, int(data['NewYcoord']) - 7), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1, 8)
 
-                                # linex3 = int(DATA[_+1]['OriginalXcoord'])
-                                # liney3 = int(DATA[_+1]['OriginalYcoord'])
-                                # linex4 = int((DATA[_+1]['OriginalXcoord']) - 300 * math.sin(math.radians(DATA[_]['Bearing'])))
-                                # liney4 = int((DATA[_+1]['OriginalYcoord']) - 300 * math.cos(math.radians(DATA[_]['Bearing'])))
-                                # try:
-                                #     intersect = line_intersect([linex1, liney1], [linex3, liney3],  None, None, [linex2, liney2], [linex4, liney4])
-                                #     if 0 < intersect[0] < x2:
-                                #         if 0 < intersect[1] < y2:
-                                #             cv2.circle(BearingImage, (int(intersect[0]), int(intersect[1])), 1, (0, 255, 0))
-                                # except ValueError, IndexError:
-                                #     print "exepted"
-                                #     pass
-                                cv2.line(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int((data['OriginalXcoord']) + 10 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) + 10 * math.cos(math.radians(data['Bearing'])))), (mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1), 1)
-                                # cv2.line(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int((data['OriginalXcoord']) - spiderline * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) - spiderline * math.cos(math.radians(data['Bearing'])))), (mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1), 1)
-                                # cv2.circle(BearingImage, (int((data['OriginalXcoord']) - 100 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) - 100 * math.cos(math.radians(data['Bearing'])))), 1, (255,255,255))
-                                cv2.circle(BearingImage, (int((data['OriginalXcoord']) + 10 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) + 10 * math.cos(math.radians(data['Bearing'])))), 1, (mPD * abs(data['Displacement']) + yy1, 0, 0), 1)
-                                cv2.putText(BearingImage, "%.3f" % data['Displacement'], (int(data['OriginalXcoord']) - 14, int(data['OriginalYcoord']) - 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, mPD * abs(data['Displacement']) + yy1, 0), 1)
-                                cv2.putText(BearingImage, "%.3f" % data['DifferencePinSize'], (int(data['OriginalXcoord']) - 14, int(data['OriginalYcoord']) + 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, mPS * abs(data['DifferencePinSize']) + yy1), 1)
-                                # Draw on the Image
-                                cv2.putText(Frame, "%d" % data['Pin'], (int(data['NewXcoord']) - 7, int(data['NewYcoord']) - 7), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1, 8)
-
-                                cv2.line(Frame, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int(data['NewXcoord']), int(data['NewYcoord'])), (0, 0, 255), 2)
-                                cv2.circle(Frame, (int(data['NewXcoord']), int(data['NewYcoord'])), 1, (0, 0, 255), 2)
+                            cv2.line(Frame, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int(data['NewXcoord']), int(data['NewYcoord'])), (0, 0, 255), 2)
+                            cv2.circle(Frame, (int(data['NewXcoord']), int(data['NewYcoord'])), 1, (0, 0, 255), 2)
 
                         frame_with_box[y1:y2, x1:x2] = Frame
                         # Creates a black image and sets each pixel value as white.
@@ -209,14 +196,22 @@ for fold in range(Start, numFolders):
                         cv2.putText(frame_with_box, "Tracking %d pins" % DATA[-1][0], (5, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
                         BlackImage[y1:y2, 0:x2-x1] = BearingImage
-                        textsize = cv2.getTextSize(str(ls[index][picture]), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
+                        textsize     = cv2.getTextSize(str(ls[index][picture]), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
                         cv2.putText(BlackImage, str(ls[index][picture]), ((x2-x1)-textsize[0][0], width-15), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
-                        video = np.concatenate((BlackImage, frame_with_box), axis=1)
+                        video        = np.concatenate((BlackImage, frame_with_box), axis=1)
 
+                        extraHeight  = abs(BearingImage.shape[0] - extrnalImage.shape[0])/2
+                        blackBar     = np.zeros((extraHeight, extrnalImage.shape[1], 3), np.uint8)
+                        extrnalImage = np.concatenate((blackBar, extrnalImage, blackBar), axis=0)
+                        video1       = np.concatenate((BearingImage, extrnalImage), axis=1)
+                        cv2.putText(video1, '[X, Y, Z, Roll, Pitch, Yaw]', (BearingImage.shape[1], 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
+                        cv2.putText(video1, str((lambda l: [round(i,1) for i in l])(map(float,ls[index][picture]))), (BearingImage.shape[1], 40), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
+                        cv2.putText(video1, 'Displacement from reference: ', (BearingImage.shape[1], 100), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
+                        cv2.putText(video1, str(DisplFromRef) + ' Degrees', (BearingImage.shape[1], 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1)
                         if Display:
-                            # cv2.imshow("Camera", video)
-                            cv2.imshow("Camera2", BearingImage)
-                            cv2.imshow("Camera3", extrnalImage)
+                            cv2.imshow("Camera", video1)
+                            # cv2.imshow("Camera2", BearingImage)
+                            # cv2.imshow("Camera3", extrnalImage)
                             # cv2.imshow("ROI", ROI)
                             # Proc1 = os.path.join(directory, "Processed", "ROI")
                             # makedir(Proc1)
@@ -227,9 +222,9 @@ for fold in range(Start, numFolders):
                                 cv2.destroyAllWindows()
                                 break
                         if Record:
-                            out.write(video)
+                            out.write(video1)
                             if extrnl:
-                                out2.write(extrnalImage)
+                                out2.write(video1)
 
                     # except (ValueError, IndexError):
                     #     print len(keypoints)
