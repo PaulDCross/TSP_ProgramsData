@@ -110,7 +110,6 @@ class Pillow:
             self.DistanceBearing.sort(key = itemgetter(0),reverse = False)
 
             if len(self.DistanceBearing) == L2:
-                from Pillow import rw
                 rw().writeList2File("Pin_Distances_Bearings.txt", self.DistanceBearing)
 
         return self.DistanceBearing

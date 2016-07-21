@@ -29,12 +29,10 @@ class Pillow:
         # Convert the frame to GRAY, and blur it
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         thresholded = cv2.threshold(image, 200, 255, cv2.THRESH_BINARY)[1]
-        # blur = cv2.GaussianBlur(image, (5,5), 0)
-        # ret, thresholded = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU) #200 255
 
         # Dialate the thresholded image to fill in holes
-        image = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, None, iterations = 1)
-        ROI = cv2.dilate(image, None, iterations = 4)
+        image = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, None, iterations = 2)
+        ROI = cv2.dilate(image, None, iterations = 1)
 
         frame_with_box = cv2.rectangle(self.frame, (x1,y1), (x2,y2), (0,255,0), 1)
 
@@ -54,10 +52,10 @@ class Pillow:
         params.blobColor = 255
         # Filter by Area.
         params.filterByArea = True
-        params.minArea = 90 # 120, 142
+        params.minArea = 120 # 120, 142
         # Filter by Circularity
         params.filterByCircularity = True
-        params.minCircularity = 0.7 # 0.8
+        params.minCircularity = 0.8
         # Create a detector with the parameters
         ver = (cv2.__version__).split('.')
         if int(ver[0]) < 4:
@@ -101,13 +99,13 @@ class Pillow:
                 else:
                     bearing = 0
 
-            if (distance < 2.5 or distance > 25):
+            if (distance < 1 or distance > 25):
                 state = 0.0
             else:
                 state = 1.0
 
             bearing = round(bearing*(180/math.pi),1)
-            # distance = round(math.pow(distance,2),1)
+            distance = round(math.pow(distance,2),1)
             self.DistanceBearing.append([data1[i][0], state, dx[i], dy[i], distance, bearing,changeinSize])
             self.DistanceBearing.sort(key = itemgetter(0),reverse = False)
 
@@ -201,6 +199,7 @@ class rw():
         return data
 
     def writeList2File(self, textFile, DATA):
+        print os.getcwd(), "\n"
         with open(textFile, "w") as file:
             DATA = '\n'.join('\t'.join(map(str,j)) for j in DATA)
             file.write(DATA)
@@ -285,6 +284,8 @@ class Pins(): # Cuts up the image of pins
                 Columns = 1
         return Columns, Rows
 
+
+
     def vertical(self,Rows,coords):
         coords = sorted(coords, key=itemgetter(0))
         b, minmax = [], []
@@ -299,7 +300,10 @@ class Pins(): # Cuts up the image of pins
         minmax[len(minmax)-1][1] = self.x2-self.x1
         minmax.append([self.x2-self.x1,self.x2-self.x1])
         midpoints = [(round((minmax[i+1][0] - minmax[i][1]),2))/2 for i in xrange(len(minmax)-1)]
+
         return midpoints, minmax
+
+
 
     def horizontal(self,Columns,coords):
         b, minmax = [], []
@@ -314,6 +318,7 @@ class Pins(): # Cuts up the image of pins
         minmax[len(minmax)-1][1] = self.y2-self.y1
         minmax.append([self.y2-self.y1,self.y2-self.y1])
         midpoints = [(round((minmax[i+1][0] - minmax[i][1]),2))/2 for i in xrange(len(minmax)-1)]
+
         return midpoints, minmax
 
     def main(self,keypoints):
@@ -338,7 +343,7 @@ class Pins(): # Cuts up the image of pins
         from Pillow import rw
         rw = rw()
         rw.writeList2File("Pin_Regions.txt",crosspoints)
-        return Columns, Rows, crosspoints
+        return Columns, Rows
 
 
 """

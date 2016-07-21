@@ -9,18 +9,18 @@ from itertools import groupby
 from sklearn import linear_model
 np.set_printoptions(precision=3, suppress=True, linewidth = 150)
 
-class rw():
-    def readFile2List(self, textFile):
-        with open(textFile, "r") as file:
-            data = []
-            for line in file.readlines():
-                data.append([float(i) for i in line.split()])
-        return data
+# class rw():
+#     def readFile2List(self, textFile):
+#         with open(textFile, "r") as file:
+#             data = []
+#             for line in file.readlines():
+#                 data.append([float(i) for i in line.split()])
+#         return data
 
-    def writeList2File(self, textFile, DATA):
-        with open(textFile, "w") as file:
-            DATA = '\n'.join('\t'.join(map(str,j)) for j in DATA)
-            file.write(DATA)
+#     def writeList2File(self, textFile, DATA):
+#         with open(textFile, "w") as file:
+#             DATA = '\n'.join('\t'.join(map(str,j)) for j in DATA)
+#             file.write(DATA)
 
 def makedir(DIR):
     if not os.path.exists(DIR):
