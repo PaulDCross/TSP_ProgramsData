@@ -187,15 +187,20 @@ for fold in range(Start, numFolders):
                         cv2.putText(BlackImage, str(ls[index][picture]), ((x2-x1)-textsize[0][0], width-15), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
                         video        = np.concatenate((BlackImage, frame_with_box), axis=1)
 
+                        # Adding some black space to push the pins away from the edge of the frame
                         blackBar     = np.zeros((10, BearingImage.shape[1], 3), np.uint8)
                         BearingImage = np.concatenate((BearingImage, blackBar), axis=0)
+                        # adding black space to the top and bottom of the external image to make it the same height as the pins frame
                         extraHeight  = abs(BearingImage.shape[0] - extrnalImage.shape[0])/2
                         blackBar     = np.zeros((extraHeight, extrnalImage.shape[1], 3), np.uint8)
                         extrnalImage = np.concatenate((blackBar, extrnalImage, blackBar), axis=0)
+                        # adding a white bar to the left side of the external image to create a devide between the two images
                         vWhiteBar      = np.zeros((extrnalImage.shape[0], 5, 3), np.uint8); vWhiteBar.fill(255)
                         extrnalImage = np.concatenate((vWhiteBar, extrnalImage), axis=1)
 
+                        # Combining the two images, Inside and Outside
                         video1       = np.concatenate((BearingImage, extrnalImage), axis=1)
+                        # Adding text to the whole frame
                         cv2.putText(video1, '[X, Y, Z, Roll, Pitch, Yaw]', (BearingImage.shape[1] + 10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
                         cv2.putText(video1, str((lambda l: [round(i,1) for i in l])(map(float,ls[index][picture]))), (BearingImage.shape[1] + 10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
                         cv2.putText(video1, 'Displacement from reference: ', (BearingImage.shape[1] + 10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
