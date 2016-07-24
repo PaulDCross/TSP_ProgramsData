@@ -114,7 +114,6 @@ class Pillow:
             if len(self.DistanceBearing) == L2:
                 from Pillow import rw
                 rw().writeList2File("Pin_Distances_Bearings.txt", self.DistanceBearing)
-
         return self.DistanceBearing
 
 
@@ -335,9 +334,7 @@ class Pins(): # Cuts up the image of pins
 
         for i in xrange(len(crosspoints)):
             crosspoints[i] = crosspoints[i]+(i+1,)
-        from Pillow import rw
-        rw = rw()
-        rw.writeList2File("Pin_Regions.txt",crosspoints)
+        rw().writeList2File("Pin_Regions.txt",crosspoints)
         return Columns, Rows, crosspoints
 
 
