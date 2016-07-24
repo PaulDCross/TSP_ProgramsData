@@ -9,16 +9,10 @@ def nonlin(x, deriv=False):
     return 1 / (1 + np.exp(-x))
 
 # Input dataset
-X = np.array([[0, 0, 1],
-              [0, 1, 1],
-              [1, 0, 1],
-              [1, 1, 1]])
+X = np.array([[0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1]])
 
 # Output dataset
-Y = np.array([[0],
-              [1],
-              [1],
-              [0]])
+Y = np.array([[0, 1, 1, 0]]).T
 
 # Seed random numbers to make calculation deterministic
 np.random.seed(1)
