@@ -203,7 +203,7 @@ for fold in range(Start, numFolders):
                         # Adding text to the whole frame
                         cv2.putText(video1, '[X, Y, Z, Roll, Pitch, Yaw]', (BearingImage.shape[1] + 10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
                         cv2.putText(video1, str((lambda l: [round(i,1) for i in l])(map(float,ls[index][picture]))), (BearingImage.shape[1] + 10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
-                        cv2.putText(video1, 'Displacement from reference: ', (BearingImage.shape[1] + 10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
+                        cv2.putText(video1, 'Displacement from Start Position: ', (BearingImage.shape[1] + 10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
                         cv2.putText(video1, str(DisplFromRef) + ' Degrees', (BearingImage.shape[1] + 10, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1)
 
                         if Display:
