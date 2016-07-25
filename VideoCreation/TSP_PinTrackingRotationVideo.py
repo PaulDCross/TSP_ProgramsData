@@ -55,11 +55,11 @@ for fold in range(Start, numFolders):
             if Record:
                 # Define the codec and create VideoWriter object
                 fourcc = cv2.VideoWriter_fourcc(*'DIVX')
-                out    = cv2.VideoWriter(os.path.join(directory, 'TSP' + Types[Type] + sign + "I" + '.avi'),fourcc, 20.0, (1578,512))
+                out    = cv2.VideoWriter(os.path.join(directory, 'BrightTSP' + Types[Type] + sign + "I" + '.avi'),fourcc, 20.0, (1578,512))
                 if extrnl:
                     # Define the codec and create VideoWriter object
                     fourcc = cv2.VideoWriter_fourcc(*'DIVX')
-                    out2    = cv2.VideoWriter(os.path.join(MovementType, 'TSPSanja' + Types[Type] + sign + "E" + '.avi'),fourcc, 30.0, (640,480))
+                    out2    = cv2.VideoWriter(os.path.join(MovementType, 'TSP' + Types[Type] + sign + "E" + '.avi'),fourcc, 30.0, (640,480))
 
             #############################################################################################
 
@@ -160,11 +160,11 @@ for fold in range(Start, numFolders):
                             pinDistX1   = 0.0
                             mPS         = ((yy2 - yy1) / (pinSizeX2 - pinSizeX1))
                             mPD         = ((yy2 - yy1) / (pinDistX2 - pinDistX1))
-                            cv2.line(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int((data['OriginalXcoord']) + 10 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) + 10 * math.cos(math.radians(data['Bearing'])))), (mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1), 1)
+                            cv2.line(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int((data['OriginalXcoord']) + 30 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) + 30 * math.cos(math.radians(data['Bearing'])))), (255, 255, 255), 1) # mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1
                             # cv2.line(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int((data['OriginalXcoord']) - spiderline * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) - spiderline * math.cos(math.radians(data['Bearing'])))), (mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1), 1)
                             # cv2.circle(BearingImage, (int((data['OriginalXcoord']) - 100 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) - 100 * math.cos(math.radians(data['Bearing'])))), 1, (255,255,255))
-                            cv2.circle(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), 2, (0, 0, mPD * abs(data['Displacement']) + yy1), -1)
-                            cv2.putText(BearingImage, "%.3f" % data['Displacement'], (int(data['OriginalXcoord']) - 14, int(data['OriginalYcoord']) - 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, mPD * abs(data['Displacement']) + yy1, 0), 1)
+                            cv2.circle(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), 2, (0, 0, 255), -1) # mPD * abs(data['Displacement']) + yy1
+                            cv2.putText(BearingImage, "%.3f" % data['Displacement'], (int(data['OriginalXcoord']) - 14, int(data['OriginalYcoord']) - 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1) # mPD * abs(data['Displacement']) + yy1
                             cv2.putText(BearingImage, str(data['Pin']), (int(data['OriginalXcoord']) - 14, int(data['OriginalYcoord']) + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
                             # Draw on the Image
                             cv2.putText(Frame, "%d" % data['Pin'], (int(data['NewXcoord']) - 7, int(data['NewYcoord']) - 7), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1, 8)
@@ -213,7 +213,7 @@ for fold in range(Start, numFolders):
                             if picture == 102:
                                 whiteBar   = np.zeros((5, referenceImage.shape[1], 3), np.uint8); whiteBar.fill(255)
                                 comparison = np.concatenate((referenceImage, whiteBar, video1), axis=0)
-                                cv2.imwrite(os.path.join(directory, "TSP"+Types[Type]+sign+'10mm'+'.png'), comparison)
+                                cv2.imwrite(os.path.join(directory, "BrightTSP"+Types[Type]+sign+'10mm'+'.png'), comparison)
                             # cv2.imshow("Camera2", BearingImage)
                             # cv2.imshow("Camera3", extrnalImage)
                             # cv2.imshow("ROI", ROI)

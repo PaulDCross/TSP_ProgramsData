@@ -23,12 +23,13 @@ data1                      = init.initialiseData(xyn)
 # Get the Keypoints
 key                        = init.detectorParameters().detect(ROI)
 # draw the keypoints on the image
-ROIkey                     = cv2.drawKeypoints(ROI, key, np.array([]), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+# ROIkey                     = cv2.drawKeypoints(ROI, key, np.array([]), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 # convert the image that will show the pin regions to colour
 ROIregions                 = cv2.cvtColor(ROI, cv2.COLOR_GRAY2BGR)
 
-blackBar = np.zeros((10, ROIkey.shape[1], 3), np.uint8)
-ROIkey = np.concatenate((ROIkey, blackBar), axis=0)
+blackBar = np.zeros((10, ROI.shape[1]), np.uint8)
+ROI = np.concatenate((ROI, blackBar), axis=0)
+ROI = cv2.cvtColor(ROI, cv2.COLOR_GRAY2BGR)
 
 for i in xrange(len(key)):
     # Label the Blobs
@@ -42,13 +43,14 @@ for i in xrange(len(key)):
 for pin in data1:
     # Label the Blobs
     size = cv2.getTextSize(str(int(pin[0])), cv2.FONT_HERSHEY_SIMPLEX, 0.65, 2)
-    cv2.putText(ROIkey, str(int(pin[0])), (int(pin[1] - (size[0][0]/4)), int(pin[2] + 25)), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0,0,255), 1)
-    cv2.circle(ROIkey, (int(pin[1]), int(pin[2])), 1, (0,0,255))
+    cv2.putText(ROI, str(int(pin[0])), (int(pin[1] - (size[0][0]/4)), int(pin[2] + 25)), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255,255,255), 1)
+    # cv2.circle(ROI, (int(pin[1]), int(pin[2])), 2, (0,0,255), 2)
+    cv2.circle(ROI, (int(pin[1]), int(pin[2])), 10, (0,0,255), 3)
 
 # print Columns, Rows
-cv2.imwrite("LabeledPins.png", ROIkey)
+cv2.imwrite("LabeledPins.png", ROI)
 # cv2.imwrite("PinRegions.png", ROIregions)
-cv2.imshow("Camera", ROIkey)
+cv2.imshow("Camera", ROI)
 # cv2.imshow("Camera1", ROI)
 if cv2.waitKey(0) & 0xFF == 27:
     cv2.destroyAllWindows()

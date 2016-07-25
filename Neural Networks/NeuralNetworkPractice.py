@@ -31,7 +31,7 @@ for j in xrange(60000):
     # By how much did we miss?
     l2_error = Y - l2
 
-    if (j% 10000) == 0:
+    if (j % 10000) == 0:
         print "Error:" + str(np.mean(np.abs(l2_error)))
 
     # In what direction is the target value? Were we really sure? If so, don't change too much.
