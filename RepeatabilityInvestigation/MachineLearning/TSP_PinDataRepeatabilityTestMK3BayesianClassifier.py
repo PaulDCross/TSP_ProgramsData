@@ -9,18 +9,6 @@ from itertools import groupby
 from sklearn.naive_bayes import GaussianNB
 np.set_printoptions(precision=3, suppress=True, linewidth = 150)
 
-class rw():
-    def readFile2List(self, textFile):
-        with open(textFile, "r") as file:
-            data = []
-            for line in file.readlines():
-                data.append([float(i) for i in line.split()])
-        return data
-
-    def writeList2File(self, textFile, DATA):
-        with open(textFile, "w") as file:
-            DATA = '\n'.join('\t'.join(map(str,j)) for j in DATA)
-            file.write(DATA)
 
 def makedir(DIR):
     if not os.path.exists(DIR):
@@ -86,13 +74,13 @@ for single in range(2):
             y_pred2            = gnb.fit(train, labels2).predict(test)
             y_pred2z           = zip(y_pred2, label2)
 
-            predictions        = sorted(y_pred2z, key=itemgetter(1))
-            # Group the predictions based on the actual depth
-            groupedPredictions = np.array([list(j) for i,j in groupby(map(list,predictions), itemgetter(1))])
-            # Calculate the mean and mad of the difference between the values
-            madPredictions     = np.array([np.mean(abs(np.subtract(abs(np.subtract([c[0] for c in b], [c[1] for c in b])), np.mean(abs(np.subtract([c[0] for c in b], [c[1] for c in b])))))) for b in groupedPredictions])
-            meanPredictions    = np.array([np.mean(abs(np.subtract([c[0] for c in b], [c[1] for c in b]))) for b in groupedPredictions])
-            xValues            = [float(b[0][1])/10 for b in groupedPredictions]
+            # predictions        = sorted(y_pred2z, key=itemgetter(1))
+            # # Group the predictions based on the actual depth
+            # groupedPredictions = np.array([list(j) for i,j in groupby(map(list,predictions), itemgetter(1))])
+            # # Calculate the mean and mad of the difference between the values
+            # madPredictions     = np.array([np.mean(abs(np.subtract(abs(np.subtract([c[0] for c in b], [c[1] for c in b])), np.mean(abs(np.subtract([c[0] for c in b], [c[1] for c in b])))))) for b in groupedPredictions])
+            # meanPredictions    = np.array([np.mean(abs(np.subtract([c[0] for c in b], [c[1] for c in b]))) for b in groupedPredictions])
+            # xValues            = [float(b[0][1])/10 for b in groupedPredictions]
 
             # print("Number of mislabeled points out of a total %d points : %d" % (test.shape[0], np.array(label2 != y_pred2).sum()))
             print "Score = {0}%, {1}mm, #{2}".format(round(gnb.score(test,label2)*100, 3), float(step)/10, set_-1)
@@ -100,9 +88,9 @@ for single in range(2):
             SaveDataLine.append(gnb.score(test,label2))
         SaveDataArray.append(SaveDataLine)
     if single:
-        Name = "TSP_Repeat_DisplResetBayesianClassifier"
+        Name = "TSP_Translation_Z_Displ_BayesianClassifier"
     else:
-        Name = "TSP_Repeat_DistX_DistYResetBayesianClassifier"
+        Name = "TSP_Translation_Z_DistX_DistY_BayesianClassifier"
     # if single:
     #     Name = "TSP_Repeatability_Displacement_Otsu"
     # else:
@@ -118,7 +106,22 @@ for single in range(2):
         plt.xlabel("Actual depth from start position, (mm)")
         plt.ylabel("Predicted depth from start position, (mm)")
         # plt.ylabel("Displacement, (mm)")
-        plt.minorticks_on()
+
+        major_ticks = np.arange(-12, 12, 1)
+        minor_ticks = np.arange(-12, 12, 0.2)
+
+        ax.set_xticks(major_ticks)
+        ax.set_xticks(minor_ticks, minor=True)
+        ax.set_yticks(major_ticks)
+        ax.set_yticks(minor_ticks, minor=True)
+
+        ax.grid(which='both')
+        ax.grid(which='minor', alpha=0.2)
+        ax.grid(which='major', alpha=1)
+
+        # ax.set_xlim(-2,2)
+        # ax.set_ylim(-2,2)
+
         x1                = [float(i[1])/10 for i in y_pred2z]
         y1                = [float(i[0])/10 for i in y_pred2z]
         labels2           = [float(i)/10 for i in label2]

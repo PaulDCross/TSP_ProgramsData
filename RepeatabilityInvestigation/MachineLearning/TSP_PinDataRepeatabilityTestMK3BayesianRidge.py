@@ -9,18 +9,6 @@ from itertools import groupby
 from sklearn import linear_model
 np.set_printoptions(precision=3, suppress=True, linewidth = 150)
 
-# class rw():
-#     def readFile2List(self, textFile):
-#         with open(textFile, "r") as file:
-#             data = []
-#             for line in file.readlines():
-#                 data.append([float(i) for i in line.split()])
-#         return data
-
-#     def writeList2File(self, textFile, DATA):
-#         with open(textFile, "w") as file:
-#             DATA = '\n'.join('\t'.join(map(str,j)) for j in DATA)
-#             file.write(DATA)
 
 def makedir(DIR):
     if not os.path.exists(DIR):
@@ -100,9 +88,9 @@ for single in range(2):
             SaveDataLine.append(gnb.score(test,label2))
         SaveDataArray.append(SaveDataLine)
     if single:
-        Name = "TSP_Repeat_DisplResetBayesianRidge"
+        Name = "TSP_Translation_Z_Displ_BayesianRidge"
     else:
-        Name = "TSP_Repeat_DistX_DistYResetBayesianRidge"
+        Name = "TSP_Translation_Z_DistX_DistY_BayesianRidge"
     # if single:
     #     Name = "TSP_Repeatability_Displacement_Otsu"
     # else:
@@ -112,13 +100,31 @@ for single in range(2):
         rw().writeList2File(os.path.join(directory, Name + ".txt"), SaveDataArray)
 
     if savingGraph:
+        # majorTicks = np.arrange()
+        # minorTicks = np.arrange()
         fig = plt.figure()
         ax  = plt.subplot(1,1,1)
+        # ax.set_xticks()
         plt.title(Name + '\nTraining Sets: {0}    Testing Sets: {1}    Step distance: {2}mm'.format(set_-1, Sets-set_, float(step)/10))
         plt.xlabel("Actual depth from start position, (mm)")
         plt.ylabel("Predicted depth from start position, (mm)")
         # plt.ylabel("Displacement, (mm)")
-        plt.minorticks_on()
+
+        major_ticks = np.arange(-12, 12, 1)
+        minor_ticks = np.arange(-12, 12, 0.2)
+
+        ax.set_xticks(major_ticks)
+        ax.set_xticks(minor_ticks, minor=True)
+        ax.set_yticks(major_ticks)
+        ax.set_yticks(minor_ticks, minor=True)
+
+        ax.grid(which='both')
+        ax.grid(which='minor', alpha=0.2)
+        ax.grid(which='major', alpha=1)
+
+        # ax.set_xlim(-2,2)
+        # ax.set_ylim(-2,2)
+
         x1                = [float(i[1])/10 for i in y_pred2z]
         y1                = [float(i[0])/10 for i in y_pred2z]
         labels2           = [float(i)/10 for i in label2]
@@ -132,7 +138,7 @@ for single in range(2):
         handles, labels   = ax.get_legend_handles_labels()
         # rw().writeList2File(os.path.join(directory, Name + "_ML.txt"), toMatlab)
         # print "Saved for Matlab"
-        plt.legend(handles, labels, loc=1)
+        plt.legend(handles, labels, loc=4)
         plt.grid()
         # plt.savefig(os.path.join(directory, Name + '.png'), dpi=None, facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format=None, transparent=False, bbox_inches=None, pad_inches=0.1, frameon=None)
         plt.show()

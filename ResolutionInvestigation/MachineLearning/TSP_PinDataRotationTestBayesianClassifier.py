@@ -103,6 +103,21 @@ for single in range(2):
         plt.xlabel("Actual Angle, (Degrees)")
         plt.ylabel("Predicted Angle, (Degrees)")
 
+        major_ticks = np.arange(-12, 12, 1)
+        minor_ticks = np.arange(-12, 12, 0.2)
+
+        ax.set_xticks(major_ticks)
+        ax.set_xticks(minor_ticks, minor=True)
+        ax.set_yticks(major_ticks)
+        ax.set_yticks(minor_ticks, minor=True)
+
+        ax.grid(which='both')
+        ax.grid(which='minor', alpha=0.2)
+        ax.grid(which='major', alpha=1)
+
+        # ax.set_xlim(-2,2)
+        # ax.set_ylim(-2,2)
+
         x1                = [float(i[1])/10 for i in y_pred3z]
         y1                = [float(i[:-3])/10 for i in y_pred3]
         labels3           = [float(i[:-3])/10 for i in label3]

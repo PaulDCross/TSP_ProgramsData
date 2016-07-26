@@ -117,7 +117,22 @@ for single in range(2):
         plt.xlabel("Actual Angle, (Degrees)")
         # plt.ylabel("Angular Displacement, (Degrees)")
         plt.ylabel("Predicted Angle, (Degrees)")
-        plt.minorticks_on()
+
+        major_ticks = np.arange(-12, 12, 1)
+        minor_ticks = np.arange(-12, 12, 0.2)
+
+        ax.set_xticks(major_ticks)
+        ax.set_xticks(minor_ticks, minor=True)
+        ax.set_yticks(major_ticks)
+        ax.set_yticks(minor_ticks, minor=True)
+
+        ax.grid(which='both')
+        ax.grid(which='minor', alpha=0.2)
+        ax.grid(which='major', alpha=1)
+
+        # ax.set_xlim(-2,2)
+        # ax.set_ylim(-2,2)
+
         x1                = [float(i[1])/10 for i in y_pred3z]
         y1                = [float(i[0])/10 for i in y_pred3z]
         labels4           = [float(i)/10 for i in label4]
@@ -131,7 +146,7 @@ for single in range(2):
         # print "Saved for Matlab"
         # plt.annotate('Rotation Y', xy=(-5, -4), xytext=(-10, 0), arrowprops=dict(facecolor='black', shrink=0.2))
         # plt.annotate('Rotation X', xy=(5, 6), xytext=(0, 10), arrowprops=dict(facecolor='black', shrink=0.2))
-        plt.legend(handles, labels, loc=1)
+        plt.legend(handles, labels, loc=4)
         plt.grid()
         # plt.savefig(os.path.join(directory, Name + '.png'), dpi=None, facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format=None, transparent=False, bbox_inches=None, pad_inches=0.1, frameon=None)
         plt.show()
