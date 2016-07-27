@@ -136,8 +136,9 @@ for single in range(2):
         x1                = [float(i[1])/10 for i in y_pred3z]
         y1                = [float(i[0])/10 for i in y_pred3z]
         labels4           = [float(i)/10 for i in label4]
-        # toMatlab          = zip(x1, y1, labels4)
+        toMatlab          = zip(x1, y1, labels4)
         best_fit          = plt.plot(labels4, labels4, 'r-', label="Correct Classification")
+        Error             = plt.bar(x1, abs(np.subtract(x1, y1)), 0.1, label="Error")
         Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
         # MAD  = plt.plot(xValues, madPredictions, label="Deviation of the data from the mean")
         # mean = plt.plot(xValues, meanPredictions, label="Mean difference between actual and predicted")

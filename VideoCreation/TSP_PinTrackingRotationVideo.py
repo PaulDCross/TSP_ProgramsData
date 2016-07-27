@@ -18,7 +18,7 @@ def makedir(DIR):
 np.set_printoptions(precision=3, suppress=True, linewidth = 150)
 
 Display        = 1
-Record         = 1
+Record         = 0
 SaveNumpy      = 0
 SaveIndividual = 0
 extrnl         = 0

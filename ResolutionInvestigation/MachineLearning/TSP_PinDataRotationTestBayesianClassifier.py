@@ -123,6 +123,7 @@ for single in range(2):
         labels3           = [float(i[:-3])/10 for i in label3]
         toMatlab          = zip(x1, y1, labels3)
         best_fit          = plt.plot(labels3, labels3, 'r-', label="Correct Classification")
+        Error             = plt.bar(x1, abs(np.subtract(x1, y1)), 0.1, label="Error")
         Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
         handles, labels   = ax.get_legend_handles_labels()
         # rw().writeList2File(os.path.join(directory, Name + "_ML.txt"), toMatlab)

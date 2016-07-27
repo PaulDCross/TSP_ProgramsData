@@ -1,12 +1,11 @@
-# Standard imports
+import sys, os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../../libraries/MachineVisionAndmore")
 from PillowEdited import *
 import cv2
 import numpy as np
 import math
 import time
-import os
 import copy
-import sys
 from itertools import islice
 from scipy.interpolate import interp1d
 import scipy.io as sio
@@ -20,25 +19,26 @@ np.set_printoptions(precision=3, suppress=True)
 
 rw             = rw()
 Display        = 0
-Record         = 0
-SaveNumpy      = 1
+Record         = 1
+SaveNumpy      = 0
 SaveIndividual = 0
-extrnl         = 0
+extrnl         = 1
 # pathname1      = os.path.join("TSP_Pictures", "NewPillowRepeatabilityTest", "EE167.5", "358.0mm", "01", "Z", "Internal", "%003d" % 1) + ".png"
 # FirstImage     = cv2.imread(pathname1)
 # refPt          = click_and_crop().crop_main(FirstImage)
 # refPt          = [(22, 87), (1146, 509)]
 # refPt          = [(429, 83), (783, 616)]
-refPt          = [(124, 83), (1057, 585)]
-x1, y1         = refPt[0][0], refPt[0][1]
-x2, y2         = refPt[1][0], refPt[1][1]
-colour         = [1]
-A              = 0
-ztool          = 167.5
-zcoordinate    = 358.0
-DIR            = os.path.join("TSP_Pictures", "NewPillowRepeatabilityTest", "EE{0}".format(ztool), "{0}mm".format(zcoordinate))
-numFolders     = int(1 + len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
-Start          = 1
+refPt        = [(124, 83), (1057, 585)]
+x1, y1       = refPt[0][0], refPt[0][1]
+x2, y2       = refPt[1][0], refPt[1][1]
+colour       = [1]
+A            = 0
+ProgramsData = os.path.join("..", "..", "..", "Python", "TSP_Testing", "TSP_Testing", "ProgramsData")
+ztool        = 167.5
+zcoordinate  = 358.0
+DIR          = os.path.join(ProgramsData, "TSP_Pictures", "NewPillowRepeatabilityTest", "EE{0}".format(ztool), "{0}mm".format(zcoordinate))
+numFolders   = int(1 + len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
+Start        = 1
 
 for fold in range(Start, numFolders):
     directory = os.path.join(DIR, "%02d" % fold)

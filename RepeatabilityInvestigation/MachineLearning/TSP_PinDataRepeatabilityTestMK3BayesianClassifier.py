@@ -127,6 +127,7 @@ for single in range(2):
         labels2           = [float(i)/10 for i in label2]
         # toMatlab          = zip(x1, y1, labels2)
         best_fit          = plt.plot(labels2, labels2, 'r-', label="Correct Classification")
+        Error             = plt.bar(x1, abs(np.subtract(x1, y1)), 0.1, label="Error")
         Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
 
         # mean = plt.plot(xValues, meanPredictions, label="Mean difference between actual and predicted")
@@ -135,7 +136,7 @@ for single in range(2):
         handles, labels   = ax.get_legend_handles_labels()
         # rw().writeList2File(os.path.join(directory, Name + "_ML.txt"), toMatlab)
         # print "Saved for Matlab"
-        plt.legend(handles, labels, loc=4)
+        plt.legend(handles, labels, loc=2)
         plt.grid()
         # plt.savefig(os.path.join(directory, Name + '.png'), dpi=None, facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format=None, transparent=False, bbox_inches=None, pad_inches=0.1, frameon=None)
         plt.show()
