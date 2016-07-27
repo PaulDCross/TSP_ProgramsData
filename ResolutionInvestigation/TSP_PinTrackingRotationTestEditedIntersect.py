@@ -1,13 +1,12 @@
-# Standard imports
+import sys, os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../libraries/MachineVisionAndmore")
 from PillowEdited import *
 import cv2
 import numpy as np
 import numpy.ma as ma
 import math
 import time
-import os
 import copy
-import sys
 from itertools import islice, product
 from operator import itemgetter
 from scipy.interpolate import interp1d
@@ -120,7 +119,8 @@ spiderline     = 50
 ztool          = 167.5
 zcoordinate    = 350.0
 Sign           = ['P', 'N']
-DIR            = os.path.join("TSP_Pictures", "NewPillowRotationTest", "RotationTest{0}".format(ztool), "{0}mm".format(zcoordinate))
+ProgramsData   = os.path.join("..", "..", "Python", "TSP_Testing", "TSP_Testing", "ProgramsData")
+DIR            = os.path.join(ProgramsData, "TSP_Pictures", "NewPillowRotationTest", "RotationTest{0}".format(ztool), "{0}mm".format(zcoordinate))
 numFolders     = int(1 + len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
 Start          = 10
 

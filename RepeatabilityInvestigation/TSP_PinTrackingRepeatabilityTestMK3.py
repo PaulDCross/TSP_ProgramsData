@@ -1,5 +1,5 @@
 import sys, os
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../../libraries/MachineVisionAndmore")
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../libraries/MachineVisionAndmore")
 from PillowEdited import *
 import cv2
 import numpy as np
@@ -15,9 +15,8 @@ def makedir(DIR):
         os.makedirs(DIR)
         time.sleep(0.5)
 
-np.set_printoptions(precision=3, suppress=True)
+np.set_printoptions(precision=3, suppress=True, linewidth = 150)
 
-rw             = rw()
 Display        = 0
 Record         = 1
 SaveNumpy      = 0
@@ -28,17 +27,17 @@ extrnl         = 1
 # refPt          = click_and_crop().crop_main(FirstImage)
 # refPt          = [(22, 87), (1146, 509)]
 # refPt          = [(429, 83), (783, 616)]
-refPt        = [(124, 83), (1057, 585)]
-x1, y1       = refPt[0][0], refPt[0][1]
-x2, y2       = refPt[1][0], refPt[1][1]
-colour       = [1]
-A            = 0
-ProgramsData = os.path.join("..", "..", "..", "Python", "TSP_Testing", "TSP_Testing", "ProgramsData")
-ztool        = 167.5
-zcoordinate  = 358.0
-DIR          = os.path.join(ProgramsData, "TSP_Pictures", "NewPillowRepeatabilityTest", "EE{0}".format(ztool), "{0}mm".format(zcoordinate))
-numFolders   = int(1 + len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
-Start        = 1
+refPt          = [(124, 83), (1057, 585)]
+x1, y1         = refPt[0][0], refPt[0][1]
+x2, y2         = refPt[1][0], refPt[1][1]
+colour         = [1]
+A              = 0
+ProgramsData   = os.path.join("..", "..", "Python", "TSP_Testing", "TSP_Testing", "ProgramsData")
+ztool          = 167.5
+zcoordinate    = 358.0
+DIR            = os.path.join(ProgramsData, "TSP_Pictures", "NewPillowRepeatabilityTest", "EE{0}".format(ztool), "{0}mm".format(zcoordinate))
+numFolders     = int(1 + len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
+Start          = 1
 
 for fold in range(Start, numFolders):
     directory = os.path.join(DIR, "%02d" % fold)
@@ -47,10 +46,10 @@ for fold in range(Start, numFolders):
     for Type in range(len([name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))])):
         # print Type
         MovementType  = os.path.join(directory, Types[Type])
+        print MovementType
         PictureFolder = os.path.join(MovementType, "Internal")
         PictureFolderE = os.path.join(MovementType, "External")
 
-        CoM = []
         if Record:
             # Define the codec and create VideoWriter object
             fourcc = cv2.VideoWriter_fourcc(*'DIVX')
@@ -90,7 +89,7 @@ for fold in range(Start, numFolders):
             # Sending the keypoints data to the class Pins in Pillow. Gives you the regions of the pins in coords.txt
             Columns, Rows, crosspoints = Pins(refPt).main(init.detectorParameters().detect(ROI1))
             # Read the numbered regional data from the text file
-            xyn           = rw.readFile2List("Pin_Regions.txt")
+            xyn           = rw().readFile2List("Pin_Regions.txt")
             # Find the coordinates of the pins in the first image
             data1         = init.initialiseData(xyn)
             X             = interp1d([0,8],[data1[0][1],data1[-1][1]])
@@ -130,25 +129,7 @@ for fold in range(Start, numFolders):
                     if SaveIndividual:
                         Directory       = os.path.join(MovementType, "DataFiles" + PictureFolder.split("\\")[-3:-1][1])
                         makedir(Directory)
-                        rw.writeList2File(os.path.join(Directory, "Data_%d.txt" % picture), DATA)
-
-                    # if 1 in DATAarray['State']:
-                    #     CoM.append(ndimage.measurements.center_of_mass(DATAarray['Displacement']))
-                    #     if len(CoM) > 20:
-                    #         CoM.pop(0)
-
-                    # for i in range(len(DATAarray[:]) - 1):            # Number of rows.
-                    #     for j in range(len(DATAarray[i][:]) - 1):     # Number of columns in each row.
-                    #         # Calculate the Distance between the pins
-                    #         d1y = math.sqrt((int(DATAarray[i + 1][j][1]) - int(DATAarray[i][j][1])) ** 2 + (int(DATAarray[i + 1][j][2]) - int(DATAarray[i][j][2])) ** 2)
-                    #         d1x = math.sqrt((int(DATAarray[i][j + 1][1]) - int(DATAarray[i][j][1])) ** 2 + (int(DATAarray[i][j + 1][2]) - int(DATAarray[i][j][2])) ** 2)
-                    #         d2y = math.sqrt((int(DATAarray[i + 1][j][4]) - int(DATAarray[i][j][4])) ** 2 + (int(DATAarray[i + 1][j][5]) - int(DATAarray[i][j][5])) ** 2)
-                    #         d2x = math.sqrt((int(DATAarray[i][j + 1][4]) - int(DATAarray[i][j][4])) ** 2 + (int(DATAarray[i][j + 1][5]) - int(DATAarray[i][j][5])) ** 2)
-                    #         # colour.append((d2x-d1x)); colour.append((d2y-d1y))
-                    #         # m = ((255 - 100) / (max(colour) - min(colour)))
-                    #         # cv2.line(Frame, (int(DATAarray[i][j][4]), int(DATAarray[i][j][5])), (int(DATAarray[i + 1][j][4]), int(DATAarray[i + 1][j][5])), (0, m * abs(d2y - d1y) + 100, 0), 5)
-                    #         # cv2.line(Frame, (int(DATAarray[i][j][4]), int(DATAarray[i][j][5])), (int(DATAarray[i][j + 1][4]), int(DATAarray[i][j + 1][5])), (0, m * abs(d2x - d1x) + 100, 0), 5)
-                    #         # cv2.rectangle(BearingImage, (int(DATAarray[i-1][j][13]), int(DATAarray[i-1][j][14])), (int(DATAarray[i][j-1][13]), int(DATAarray[i][j-1][14])), (255,255,255), -1)
+                        rw().writeList2File(os.path.join(Directory, "Data_%d.txt" % picture), DATA)
 
                     for data in DATA:
                         if data['State']: # Draw the Line
@@ -185,25 +166,11 @@ for fold in range(Start, numFolders):
                     # Give the frame a title and display the number of blobs.
                     cv2.putText(frame_with_box, pathname2, (5, width-15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
                     cv2.putText(frame_with_box, "Tracking %d pins" % DATA[-1][0], (5, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
-                    # for xCoM, yCoM in CoM:
-                    #     # print xCoM, yCoM
-                    #     cv2.circle(BearingImage, (Y(yCoM), X(xCoM)), 2, (0,0,255), 2)
 
                     BlackImage[y1:y2, 0:x2-x1] = BearingImage
                     textsize = cv2.getTextSize(str(ls[index][picture]), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
                     cv2.putText(BlackImage, str(ls[index][picture]), ((x2-x1)-textsize[0][0], width-15), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
                     video = np.concatenate((BlackImage, frame_with_box), axis=1)
-
-                    # Show the frames
-
-                    # Proc1 = os.path.join(directory, "Processed", "Overview")
-                    # Proc2 = os.path.join(directory, "Processed", "Bearings")
-                    # makedir(Proc1)
-                    # makedir(Proc2)
-                    # cv2.imwrite(os.path.join(Proc1, "Overview%d.png" % picture), frame_with_box)
-                    # cv2.imwrite(os.path.join(Proc2, "Bearings%d.png" % picture), BearingImage)
-                    # cv2.imwrite("Overview%d.png" % picture, frame_with_box)
-                    # cv2.imwrite("Bearings%d.png" % picture, BearingImage)
 
                     if Display:
                         cv2.imshow("Camera", video)
