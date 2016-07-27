@@ -57,7 +57,7 @@ for fold in range(Start, numFolders):
             if extrnl:
                 # Define the codec and create VideoWriter object
                 fourcc = cv2.VideoWriter_fourcc(*'DIVX')
-                out2    = cv2.VideoWriter(os.path.join(MovementType, 'TSP' + PictureFolder.split("\\")[-3:-1][0] + PictureFolder.split("\\")[-3:-1][1] + "E" + '.avi'),fourcc, 20.0, (640,480))
+                out2   = cv2.VideoWriter(os.path.join(MovementType, 'TSP' + PictureFolder.split("\\")[-3:-1][0] + PictureFolder.split("\\")[-3:-1][1] + "E" + '.avi'),fourcc, 40.0, (640,480))
 
         #############################################################################################
 
@@ -106,99 +106,100 @@ for fold in range(Start, numFolders):
 
             if (SecondImage.any()):
                 print fold, Types[Type], first, picture
-                try:
-                    # Set up the second image
-                    rec                 = Pillow(frame, refPt)
-                    ROI, frame_with_box = rec.getFrame()
-                    # Set the detectors parametors and detect blobs.
-                    keypoints           = rec.detectorParameters().detect(ROI)
-                    Frame               = frame[y1:y2, x1:x2]
-                    # Draw detected blobs as red circles. cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
-                    Frame               = cv2.drawKeypoints(Frame, keypoints, np.array([]), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-                    data2               = rec.getDataSet2(keypoints, xyn)
-                    DistanceBearing     = rec.measurements(data1, data2, len(keypoints))
-                    DATA                = np.array([tuple(data) for data in [data1[i] + data2[i][1:] + DistanceBearing[i][1:] + [directory[-2:]] + [first] + [picture] + [ls[index][picture][0]] + [ls[index][picture][1]] + [ls[index][picture][2]] + [ls[index][picture][3]] + [ls[index][picture][4]] + [ls[index][picture][5]] + [Types[Type]] + [float(ls[index][picture][2]) - zcoordinate] for i in xrange(len(keypoints))]], dtype=[('Pin',object), ('OriginalXcoord',object), ('OriginalYcoord',object), ('OriginalPinSize',object), ('NewXcoord',object), ('NewYcoord',object), ('NewPinSize',object), ('State',object), ('DifferenceX',object), ('DifferenceY',object), ('Displacement',object), ('Bearing',object), ('DifferencePinSize',object), ('DataSet',object), ('PastImage',object), ('PresentImage',object),('X',object), ('Y',object), ('Z',object), ('Rx',object), ('Ry',object), ('Rz',object), ('Type', object), ('Depth', object)])
-                    if A == 0:
-                        array1          = DATA
-                        array2          = np.array(np.split(DATA, range(Columns,len(DATA),Columns)))
-                        A += 1
-                    else:
-                        array1          = np.vstack((array1, DATA))
-                        array2          = np.vstack((array2, np.array(np.split(DATA, range(Columns,len(DATA),Columns)))))
-                    DATAarray           = np.array(np.split(DATA, range(Columns,len(DATA),Columns)))
-                    if SaveIndividual:
-                        Directory       = os.path.join(MovementType, "DataFiles" + PictureFolder.split("\\")[-3:-1][1])
-                        makedir(Directory)
-                        rw().writeList2File(os.path.join(Directory, "Data_%d.txt" % picture), DATA)
+                # Set up the second image
+                rec                 = Pillow(frame, refPt)
+                ROI, frame_with_box = rec.getFrame()
+                # Set the detectors parametors and detect blobs.
+                keypoints           = rec.detectorParameters().detect(ROI)
+                Frame               = frame[y1:y2, x1:x2]
+                # Draw detected blobs as red circles. cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
+                Frame               = cv2.drawKeypoints(Frame, keypoints, np.array([]), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+                data2               = rec.getDataSet2(keypoints, xyn)
+                DistanceBearing     = rec.measurements(data1, data2, len(keypoints))
+                DATA                = np.array([tuple(data) for data in [data1[i] + data2[i][1:] + DistanceBearing[i][1:] + [directory[-2:]] + [first] + [picture] + [ls[index][picture][0]] + [ls[index][picture][1]] + [ls[index][picture][2]] + [ls[index][picture][3]] + [ls[index][picture][4]] + [ls[index][picture][5]] + [Types[Type]] + [float(ls[index][picture][2]) - zcoordinate] for i in xrange(len(keypoints))]], dtype=[('Pin',object), ('OriginalXcoord',object), ('OriginalYcoord',object), ('OriginalPinSize',object), ('NewXcoord',object), ('NewYcoord',object), ('NewPinSize',object), ('State',object), ('DifferenceX',object), ('DifferenceY',object), ('Displacement',object), ('Bearing',object), ('DifferencePinSize',object), ('DataSet',object), ('PastImage',object), ('PresentImage',object),('X',object), ('Y',object), ('Z',object), ('Rx',object), ('Ry',object), ('Rz',object), ('Type', object), ('Depth', object)])
+                if A == 0:
+                    array1          = DATA
+                    array2          = np.array(np.split(DATA, range(Columns,len(DATA),Columns)))
+                    A += 1
+                else:
+                    array1          = np.vstack((array1, DATA))
+                    array2          = np.vstack((array2, np.array(np.split(DATA, range(Columns,len(DATA),Columns)))))
+                DATAarray           = np.array(np.split(DATA, range(Columns,len(DATA),Columns)))
+                if SaveIndividual:
+                    Directory       = os.path.join(MovementType, "DataFiles" + PictureFolder.split("\\")[-3:-1][1])
+                    makedir(Directory)
+                    rw().writeList2File(os.path.join(Directory, "Data_%d.txt" % picture), DATA)
 
-                    for data in DATA:
-                        if data['State']: # Draw the Line
-                            # Drawing the bearings
-                            colour.append(data['DifferencePinSize'])
-                            yy2         = 255
-                            yy1         = 20
-                            # pinSizeX2 = max(colour)
-                            # pinSizeX1 = min(colour)
-                            pinSizeX2   = 3.0
-                            pinSizeX1   = 0.0
-                            pinDistX2   = 10.0
-                            pinDistX1   = 0.0
-                            mPS         = ((yy2 - yy1) / (pinSizeX2 - pinSizeX1))
-                            mPD         = ((yy2 - yy1) / (pinDistX2 - pinDistX1))
-                            cv2.line(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int((data['OriginalXcoord']) + 10 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) + 10 * math.cos(math.radians(data['Bearing'])))), (mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1), 1)
-                            cv2.line(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int((data['OriginalXcoord']) - 300 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) - 300 * math.cos(math.radians(data['Bearing'])))), (mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1), 1)
-                            # cv2.circle(BearingImage, (int((data['OriginalXcoord']) - 100 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) - 100 * math.cos(math.radians(data['Bearing'])))), 1, (255,255,255))
-                            cv2.circle(BearingImage, (int((data['OriginalXcoord']) + 10 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) + 10 * math.cos(math.radians(data['Bearing'])))), 1, (mPD * abs(data['Displacement']) + yy1, 0, 0), 1)
-                            cv2.putText(BearingImage, "%.3f" % data['Displacement'], (int(data['OriginalXcoord']) - 14, int(data['OriginalYcoord']) - 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, mPD * abs(data['Displacement']) + yy1, 0), 1)
-                            cv2.putText(BearingImage, "%.3f" % data['DifferencePinSize'], (int(data['OriginalXcoord']) - 14, int(data['OriginalYcoord']) + 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, mPS * abs(data['DifferencePinSize']) + yy1), 1)
-                            # Draw on the Image
-                            cv2.putText(Frame, "%d" % data['Pin'], (int(data['NewXcoord']) - 7, int(data['NewYcoord']) - 7), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1, 8)
+                for data in DATA:
+                    if data['State']: # Draw the Line
+                        # Drawing the bearings
+                        colour.append(data['DifferencePinSize'])
+                        yy2         = 255
+                        yy1         = 20
+                        # pinSizeX2 = max(colour)
+                        # pinSizeX1 = min(colour)
+                        pinSizeX2   = 3.0
+                        pinSizeX1   = 0.0
+                        pinDistX2   = 10.0
+                        pinDistX1   = 0.0
+                        mPS         = ((yy2 - yy1) / (pinSizeX2 - pinSizeX1))
+                        mPD         = ((yy2 - yy1) / (pinDistX2 - pinDistX1))
+                        cv2.line(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int((data['OriginalXcoord']) + 10 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) + 10 * math.cos(math.radians(data['Bearing'])))), (mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1), 1)
+                        cv2.line(BearingImage, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int((data['OriginalXcoord']) - 300 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) - 300 * math.cos(math.radians(data['Bearing'])))), (mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1, mPD * abs(data['Displacement']) + yy1), 1)
+                        # cv2.circle(BearingImage, (int((data['OriginalXcoord']) - 100 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) - 100 * math.cos(math.radians(data['Bearing'])))), 1, (255,255,255))
+                        cv2.circle(BearingImage, (int((data['OriginalXcoord']) + 10 * math.sin(math.radians(data['Bearing']))), int((data['OriginalYcoord']) + 10 * math.cos(math.radians(data['Bearing'])))), 1, (mPD * abs(data['Displacement']) + yy1, 0, 0), 1)
+                        cv2.putText(BearingImage, "%.3f" % data['Displacement'], (int(data['OriginalXcoord']) - 14, int(data['OriginalYcoord']) - 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, mPD * abs(data['Displacement']) + yy1, 0), 1)
+                        cv2.putText(BearingImage, "%.3f" % data['DifferencePinSize'], (int(data['OriginalXcoord']) - 14, int(data['OriginalYcoord']) + 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, mPS * abs(data['DifferencePinSize']) + yy1), 1)
+                        # Draw on the Image
+                        cv2.putText(Frame, "%d" % data['Pin'], (int(data['NewXcoord']) - 7, int(data['NewYcoord']) - 7), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1, 8)
 
-                            cv2.line(Frame, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int(data['NewXcoord']), int(data['NewYcoord'])), (0, 0, 255), 2)
-                            cv2.circle(Frame, (int(data['NewXcoord']), int(data['NewYcoord'])), 1, (0, 0, 255), 2)
+                        cv2.line(Frame, (int(data['OriginalXcoord']), int(data['OriginalYcoord'])), (int(data['NewXcoord']), int(data['NewYcoord'])), (0, 0, 255), 2)
+                        cv2.circle(Frame, (int(data['NewXcoord']), int(data['NewYcoord'])), 1, (0, 0, 255), 2)
 
-                    frame_with_box[y1:y2, x1:x2] = Frame
-                    # Creates a black image and sets each pixel value as white.
-                    width = 60
-                    whiteBar = np.zeros((width, frame_with_box.shape[1], 3), np.uint8); whiteBar.fill(255)
-                    # Sets the region specified to be equal to the white image create above.
-                    frame_with_box[0:width, 0:frame_with_box.shape[1]] = whiteBar
-                    # Give the frame a title and display the number of blobs.
-                    cv2.putText(frame_with_box, pathname2, (5, width-15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
-                    cv2.putText(frame_with_box, "Tracking %d pins" % DATA[-1][0], (5, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+                frame_with_box[y1:y2, x1:x2] = Frame
+                # Creates a black image and sets each pixel value as white.
+                width = 60
+                whiteBar = np.zeros((width, frame_with_box.shape[1], 3), np.uint8); whiteBar.fill(255)
+                # Sets the region specified to be equal to the white image create above.
+                frame_with_box[0:width, 0:frame_with_box.shape[1]] = whiteBar
+                # Give the frame a title and display the number of blobs.
+                cv2.putText(frame_with_box, pathname2, (5, width-15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+                cv2.putText(frame_with_box, "Tracking %d pins" % DATA[-1][0], (5, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
-                    BlackImage[y1:y2, 0:x2-x1] = BearingImage
-                    textsize = cv2.getTextSize(str(ls[index][picture]), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
-                    cv2.putText(BlackImage, str(ls[index][picture]), ((x2-x1)-textsize[0][0], width-15), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
-                    video = np.concatenate((BlackImage, frame_with_box), axis=1)
+                BlackImage[y1:y2, 0:x2-x1] = BearingImage
+                textsize = cv2.getTextSize(str(ls[index][picture]), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
+                cv2.putText(BlackImage, str(ls[index][picture]), ((x2-x1)-textsize[0][0], width-15), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
+                video = np.concatenate((BlackImage, frame_with_box), axis=1)
 
-                    if Display:
-                        cv2.imshow("Camera", video)
-                        # cv2.imshow("Camera2", BearingImage)
-                        # cv2.imshow("Camera3", frame_with_box)
-                        # cv2.imshow("Frame", ROI)
+                if Display:
+                    cv2.imshow("Camera", video)
+                    # cv2.imshow("Camera2", BearingImage)
+                    # cv2.imshow("Camera3", frame_with_box)
+                    # cv2.imshow("Frame", ROI)
 
-                    if cv2.waitKey(10) & 0xFF == 27:
-                        cv2.destroyAllWindows()
-                        sys.exit()
-                        # break
-                    if Record:
-                        out.write(video)
-                        if extrnl:
-                            out2.write(extrnalImage)
+                if cv2.waitKey(10) & 0xFF == 27:
+                    cv2.destroyAllWindows()
+                    sys.exit()
+                    # break
 
-                except (ValueError, IndexError):
-                    print len(keypoints)
-                    cv2.imshow("Frame", cv2.drawKeypoints(ROI, keypoints, np.array([]), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS))
-                    if cv2.waitKey(0) & 0xFF == 27:
-                        cv2.destroyAllWindows()
+                if Record:
+                    out.write(video)
+                    if extrnl:
+                        # print extrnalImage.shape
+                        out2.write(extrnalImage)
+
+                # except (ValueError, IndexError):
+                #     print len(keypoints)
+                #     cv2.imshow("Frame", cv2.drawKeypoints(ROI, keypoints, np.array([]), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS))
+                #     if cv2.waitKey(0) & 0xFF == 27:
+                #         cv2.destroyAllWindows()
             # if first <= 203:
             #     first += 2
 
-            if Record:
-                out.release()
-                if extrnl:
-                    out2.release()
+        if Record:
+            out.release()
+            if extrnl:
+                out2.release()
 if SaveNumpy:
     np.save(os.path.join(DIR, "datalineJuly14" + str(Start) + str(numFolders-1)), array1)
     np.save(os.path.join(DIR, "dataarrayJuly14" + str(Start) + str(numFolders-1)), array2)
