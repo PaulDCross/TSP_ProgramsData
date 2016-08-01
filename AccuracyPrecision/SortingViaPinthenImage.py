@@ -41,15 +41,28 @@ Every entry to the array is a different depth. Every value in every entry is the
 
 
 X = np.array([[ma.masked_array([pin[names.index('NewXcoord')] for pin in Data], [not pin[names.index('State')] for pin in Data]).compressed() for Data in GData] for GData in groupedgroupedData])
-Y = np.array([[ma.masked_array([abs(pin[names.index('Depth')]) for pin in Data], [not pin[names.index('State')] for pin in Data]).compressed() for Data in GData] for GData in groupedgroupedData])
-Z = np.array([[ma.masked_array([pin[names.index('Pin')] for pin in Data], [not pin[names.index('State')] for pin in Data]).compressed() for Data in GData] for GData in groupedgroupedData])
+Y = np.array([[ma.masked_array([pin[names.index('NewYcoord')] for pin in Data], [not pin[names.index('State')] for pin in Data]).compressed() for Data in GData] for GData in groupedgroupedData])
+Z1 = np.array([[ma.masked_array([abs(pin[names.index('PresentImage')]) for pin in Data], [not pin[names.index('State')] for pin in Data]).compressed() for Data in GData] for GData in groupedgroupedData])
+Z2 = np.array([[ma.masked_array([pin[names.index('Pin')] for pin in Data], [not pin[names.index('State')] for pin in Data]).compressed() for Data in GData] for GData in groupedgroupedData])
 
-MAD = np.array([[ np.mean( abs(line - np.mean(line))) for line in section] for section in np.array([np.array([c for c in b if len(c)>3]) for b in X if len([c for c in b if len(c)>3])>3])])
-depth = np.array([[np.mean(line) for line in section] for section in np.array([np.array([c for c in b if len(c)>3]) for b in Y if len([c for c in b if len(c)>3])>3])])
-pinName = np.array([[np.mean(line) for line in section] for section in np.array([np.array([c for c in b if len(c)>3]) for b in Z if len([c for c in b if len(c)>3])>3])])
+MADX = np.array([[ np.mean( abs(line - np.mean(line))) for line in section] for section in np.array([np.array([c for c in b if len(c)>3]) for b in X if len([c for c in b if len(c)>3])>3])])
+MADY = np.array([[ np.mean( abs(line - np.mean(line))) for line in section] for section in np.array([np.array([c for c in b if len(c)>3]) for b in Y if len([c for c in b if len(c)>3])>3])])
+depth = np.array([[np.mean(line) for line in section] for section in np.array([np.array([c for c in b if len(c)>3]) for b in Z1 if len([c for c in b if len(c)>3])>3])])
+pinName = np.array([[np.mean(line) for line in section] for section in np.array([np.array([c for c in b if len(c)>3]) for b in Z2 if len([c for c in b if len(c)>3])>3])])
 
-zdata = np.array([np.array(zip(MAD[i], depth[i], pinName[i])) for i in range(len(MAD))])
-sio.savemat("ZippedMADXDepthName.mat", {'MADX' : MAD, 'Depth' : depth, "PinName" : pinName, 'ZippedData' : zdata})
+
+zMADXdepth      = np.array([map(list, zip(MADX[i], depth[i], pinName[i])) for i in range(len(MADX))])
+raveledX        = [pinDepth for pinRun in zMADXdepth for pinDepth in pinRun]
+sortedMADXdepth = sorted(raveledX, key=lambda l: l[1])
+groupingX       = [list(j) for i,j in groupby(sortedMADXdepth, key=lambda l: l[1])]
+MADXPINS        = np.array([(np.mean([pin[0] for pin in DEPTH]), np.mean([pin[1] for pin in DEPTH])) for DEPTH in groupingX])
+
+zMADYdepth      = np.array([map(list, zip(MADY[i], depth[i], pinName[i])) for i in range(len(MADY))])
+raveledY        = [pinDepth for pinRun in zMADYdepth for pinDepth in pinRun]
+sortedMADYdepth = sorted(raveledY, key=lambda l: l[1])
+groupingY       = [list(j) for i,j in groupby(sortedMADYdepth, key=lambda l: l[1])]
+MADYPINS        = np.array([(np.mean([pin[0] for pin in DEPTH]), np.mean([pin[1] for pin in DEPTH])) for DEPTH in groupingY])
+
+sio.savemat("ZippedMADXYDepthName.mat", {'MADX' : MADX, 'Depth' : depth, "PinName" : pinName, "MaddeningX" : MADXPINS, "MaddeningY" : MADYPINS})
 # np.array([np.array([c for c in b if len(c)>3]) for b in X if len([c for c in b if len(c)>3])>3])
 # np.array([np.array([c for c in b if len(c)>3]) for b in Y if len([c for c in b if len(c)>3])>3])
-

@@ -1,6 +1,6 @@
-import sys, os
+import os, sys
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../../libraries/MachineVisionAndmore")
-from Pillow import rw
+from PillowEdited import rw
 import numpy as np
 import time
 from matplotlib import pyplot as plt
@@ -40,7 +40,7 @@ for single in range(2):
             gnb = linear_model.BayesianRidge()
             train, test, labels1, labels2, labels3, labels4, label1, label2, label3, label4 = [], [], [], [], [], [], [], [], [], []
             for _, values in enumerate(data[['Displacement', 'DifferenceX', 'DifferenceY', 'Bearing', 'X', 'Y', 'Z', 'Rx', 'Ry', 'Rz', 'DataSet', 'State', 'Type', 'Sign']]):
-                if values['Type'][0] == 'Ry':
+                if values['Type'][0] == 'Rx':
                     if np.count_nonzero(values['State']) > 4:
                         if (round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0)) % step == 0:
                             if 0 < values['DataSet'][0] < set_:
@@ -98,9 +98,9 @@ for single in range(2):
     # else:
     #     Name = "TSP_Rotation_DistanceX_and_DistanceY"
     if single:
-        Name = "TSP_Rotation_Ry_Disp_BayesianRidge"
+        Name = "Using Pin Displacement for the features of the Regression Method"
     else:
-        Name = "TSP_Rotation_Ry_DistX_DistY_BayesianRidge"
+        Name = "Using Delta X and Delta Y for the features of the Regression Method"
     # if single:
     #     Name = "TSP_Rotation_Displacement_Otsu"
     # else:
@@ -130,16 +130,16 @@ for single in range(2):
         ax.grid(which='minor', alpha=0.2)
         ax.grid(which='major', alpha=1)
 
-        # ax.set_xlim(-2,2)
-        # ax.set_ylim(-2,2)
+        ax.set_xlim(0,2)
+        ax.set_ylim(0,2)
 
         x1                = [float(i[1])/10 for i in y_pred3z]
         y1                = [float(i[0])/10 for i in y_pred3z]
         labels4           = [float(i)/10 for i in label4]
         toMatlab          = zip(x1, y1, labels4)
-        best_fit          = plt.plot(labels4, labels4, 'r-', label="Correct Classification")
-        Error             = plt.bar(x1, abs(np.subtract(x1, y1)), 0.1, label="Error")
-        Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
+        best_fit          = plt.plot(labels4, labels4, 'r-', label="Correct Value")
+        # Error             = plt.bar(x1, abs(np.subtract(x1, y1)), 0.1, label="Error")
+        Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Machine Learning Output")
         # MAD  = plt.plot(xValues, madPredictions, label="Deviation of the data from the mean")
         # mean = plt.plot(xValues, meanPredictions, label="Mean difference between actual and predicted")
         handles, labels   = ax.get_legend_handles_labels()
@@ -147,7 +147,7 @@ for single in range(2):
         # print "Saved for Matlab"
         # plt.annotate('Rotation Y', xy=(-5, -4), xytext=(-10, 0), arrowprops=dict(facecolor='black', shrink=0.2))
         # plt.annotate('Rotation X', xy=(5, 6), xytext=(0, 10), arrowprops=dict(facecolor='black', shrink=0.2))
-        plt.legend(handles, labels, loc=4)
+        plt.legend(handles, labels, loc=2)
         plt.grid()
         # plt.savefig(os.path.join(directory, Name + '.png'), dpi=None, facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format=None, transparent=False, bbox_inches=None, pad_inches=0.1, frameon=None)
         plt.show()

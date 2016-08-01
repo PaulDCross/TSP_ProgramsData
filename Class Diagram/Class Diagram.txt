@@ -1,0 +1,14 @@
+%2F%2F Cool Class Diagram,
+
+[Pin|Number : int;  X Coordinate : float;   Y Coordinate : float;   Diameter : float;   Delta X : float;    Delta Y : float;   Delta Diameter : float;    Displacement : float;   State : bool]
+
+[Image|Previous Image Number : int; Present Image Number : int; Set Number : int;   Movement Type : string]
+
+[Set|Set Number : int]
+
+[Robot Manipulator|X Coordinate : float;    Y Coordinate : float;   Z Coordinate : float;   Roll Coordinate : float;    Pitch Coordinate : float;   Yaw Coordinate : float]
+
+[Robot Manipulator]->[Image]
+[Pin]-1..*>[Image]
+[Set]->[Image]
+[Image]-1..*>[Data Set]

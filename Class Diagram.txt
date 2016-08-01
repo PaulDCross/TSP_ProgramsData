@@ -1,0 +1,17 @@
+%2F%2F Cool Class Diagram,
+
+[Pin|Number : int;  Former X Coordinate : float;   Former Y Coordinate : float;   Former Diameter : float;  Current X Coordinate : float;   Current Y Coordinate : float;   Current Diameter : float;   Delta X : float;    Delta Y : float;   Delta Diameter : float;    Displacement : float; Bearing : int;   State : bool]
+
+[Robot Manipulator|X Coordinate : float;    Y Coordinate : float;   Z Coordinate : float;   Roll Coordinate : float;    Pitch Coordinate : float;   Yaw Coordinate : float]
+
+[Image|Previous Image Number : int; Present Image Number : int;   Movement Type : string;   Set Number : int]
+[Robot Manipulator]->[Pin Entry]
+[Pin]->[Pin Entry]
+[Image]->[Pin Entry]
+
+[Pin Entry]->[Image Entry]
+[Image Entry]->[Data Set]
+
+[note:Every Image must contain the same number of Pins{bg:wheat}]-[Image Entry]
+[Robot Manipulator]-[note:Every Image has a corresponding end-effector position{bg:wheat}]
+
