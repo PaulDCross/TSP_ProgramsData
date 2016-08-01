@@ -88,9 +88,9 @@ for single in range(2):
             SaveDataLine.append(gnb.score(test,label2))
         SaveDataArray.append(SaveDataLine)
     if single:
-        Name = "TSP_Translation_Z_Displ_BayesianClassifier"
+        Name = "Using Pin Displacement for the features of the Classifier"
     else:
-        Name = "TSP_Translation_Z_DistX_DistY_BayesianClassifier"
+        Name = "Using Delta X and Delta Y for the features of the Classifier"
     # if single:
     #     Name = "TSP_Repeatability_Displacement_Otsu"
     # else:
@@ -119,16 +119,16 @@ for single in range(2):
         ax.grid(which='minor', alpha=0.2)
         ax.grid(which='major', alpha=1)
 
-        # ax.set_xlim(-2,2)
-        # ax.set_ylim(-2,2)
+        ax.set_xlim(3.5,5)
+        ax.set_ylim(3.5,5)
 
         x1                = [float(i[1])/10 for i in y_pred2z]
         y1                = [float(i[0])/10 for i in y_pred2z]
         labels2           = [float(i)/10 for i in label2]
         # toMatlab          = zip(x1, y1, labels2)
-        best_fit          = plt.plot(labels2, labels2, 'r-', label="Correct Classification")
-        Error             = plt.bar(x1, abs(np.subtract(x1, y1)), 0.1, label="Error")
-        Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Classifier Output")
+        best_fit          = plt.plot(labels2, labels2, 'r-', label="Correct Value")
+        # Error             = plt.bar(x1, abs(np.subtract(x1, y1)), 0.1, label="Error")
+        Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Machine Learning Output")
 
         # mean = plt.plot(xValues, meanPredictions, label="Mean difference between actual and predicted")
         # MAD  = plt.plot(xValues, madPredictions, label="Deviation of the data from the mean")
