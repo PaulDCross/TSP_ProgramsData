@@ -50,8 +50,8 @@ for single in range(2):
                                     train.append(np.concatenate(((values[names[Column1]]*10).astype(int), (values[names[Column2]]*10).astype(int))))
                                 labels1.append(values['Type'][0])
                                 labels2.append(values['Sign'][0])
-                                labels3.append(str(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0))) + values['Type'][0] + values['Sign'][0])
-                                labels4.append(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0)))
+                                labels3.append(str(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0))*np.sign(values[values['Type'][0]][0])*-1) + values['Type'][0] + values['Sign'][0])
+                                labels4.append(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0))*np.sign(values[values['Type'][0]][0])*-1)
                             else:
                                 if single:
                                     test.append(np.concatenate(((values[names[Column0]]*10).astype(int), )))
@@ -59,8 +59,8 @@ for single in range(2):
                                     test.append(np.concatenate(((values[names[Column1]]*10).astype(int), (values[names[Column2]]*10).astype(int))))
                                 label1.append(values['Type'][0])
                                 label2.append(values['Sign'][0])
-                                label3.append(str(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0))) + values['Type'][0] + values['Sign'][0])
-                                label4.append(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0)))
+                                label3.append(str(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0))*np.sign(values[values['Type'][0]][0])*-1) + values['Type'][0] + values['Sign'][0])
+                                label4.append(int(round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0))*np.sign(values[values['Type'][0]][0])*-1)
             print "\nSetting up train and test sets."
             train   = np.array(train)
             test    = np.array(test)
@@ -130,15 +130,15 @@ for single in range(2):
         ax.grid(which='minor', alpha=0.2)
         ax.grid(which='major', alpha=1)
 
-        ax.set_xlim(0,2)
-        ax.set_ylim(0,2)
+        # ax.set_xlim(0,2)
+        # ax.set_ylim(0,2)
 
         x1                = [float(i[1])/10 for i in y_pred3z]
         y1                = [float(i[0])/10 for i in y_pred3z]
         labels4           = [float(i)/10 for i in label4]
         toMatlab          = zip(x1, y1, labels4)
         best_fit          = plt.plot(labels4, labels4, 'r-', label="Correct Value")
-        # Error             = plt.bar(x1, abs(np.subtract(x1, y1)), 0.1, label="Error")
+        Error             = plt.bar(x1, abs(np.subtract(x1, y1)), 0.1, label="Error")
         Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Machine Learning Output")
         # MAD  = plt.plot(xValues, madPredictions, label="Deviation of the data from the mean")
         # mean = plt.plot(xValues, meanPredictions, label="Mean difference between actual and predicted")
