@@ -40,7 +40,7 @@ for single in range(2):
             gnb = linear_model.BayesianRidge()
             train, test, labels1, labels2, labels3, labels4, label1, label2, label3, label4 = [], [], [], [], [], [], [], [], [], []
             for _, values in enumerate(data[['Displacement', 'DifferenceX', 'DifferenceY', 'Bearing', 'X', 'Y', 'Z', 'Rx', 'Ry', 'Rz', 'DataSet', 'State', 'Type', 'Sign']]):
-                if values['Type'][0] == 'Rx':
+                if values['Type'][0] == 'Ry':
                     if np.count_nonzero(values['State']) > 4:
                         if (round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0)) % step == 0:
                             if 0 < values['DataSet'][0] < set_:
@@ -104,10 +104,10 @@ for single in range(2):
     # if single:
     #     Name = "TSP_Rotation_Displacement_Otsu"
     # else:
-    #     Name = "TSP_Rotation_DistanceX_DistanceY_Otsu"
+    #     Name = "TSP_Rotation_DistanceX_DistanceYO_tsu"
     print os.path.join(directory, Name)
     if savingtext:
-        rw.writeList2File(os.path.join(directory, Name + ".txt"), SaveDataArray)
+        rw().writeList2File(os.path.join(directory, Name + ".txt"), SaveDataArray)
     print SaveDataArray
 
     if savingGraph:
@@ -123,15 +123,15 @@ for single in range(2):
 
         ax.set_xticks(major_ticks)
         ax.set_xticks(minor_ticks, minor=True)
+
         ax.set_yticks(major_ticks)
         ax.set_yticks(minor_ticks, minor=True)
 
-        ax.grid(which='both')
-        ax.grid(which='minor', alpha=0.2)
         ax.grid(which='major', alpha=1)
+        # ax.grid(which='minor', alpha=0.5)
 
-        # ax.set_xlim(0,2)
-        # ax.set_ylim(0,2)
+        # ax.set_xlim(-2,2)
+        # ax.set_ylim(-2,2)
 
         x1                = [float(i[1])/10 for i in y_pred3z]
         y1                = [float(i[0])/10 for i in y_pred3z]
@@ -148,6 +148,5 @@ for single in range(2):
         # plt.annotate('Rotation Y', xy=(-5, -4), xytext=(-10, 0), arrowprops=dict(facecolor='black', shrink=0.2))
         # plt.annotate('Rotation X', xy=(5, 6), xytext=(0, 10), arrowprops=dict(facecolor='black', shrink=0.2))
         plt.legend(handles, labels, loc=2)
-        plt.grid()
         # plt.savefig(os.path.join(directory, Name + '.png'), dpi=None, facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format=None, transparent=False, bbox_inches=None, pad_inches=0.1, frameon=None)
         plt.show()

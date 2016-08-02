@@ -115,22 +115,22 @@ for single in range(2):
 
         ax.set_xticks(major_ticks)
         ax.set_xticks(minor_ticks, minor=True)
+
         ax.set_yticks(major_ticks)
         ax.set_yticks(minor_ticks, minor=True)
 
-        ax.grid(which='both')
-        ax.grid(which='minor', alpha=0.2)
         ax.grid(which='major', alpha=1)
+        # ax.grid(which='minor', alpha=0.5)
 
-        ax.set_xlim(3.5,5)
-        ax.set_ylim(3.5,5)
+        # ax.set_xlim(3.5,5)
+        # ax.set_ylim(3.5,5)
 
         x1                = [float(i[1])/10 for i in y_pred2z]
         y1                = [float(i[0])/10 for i in y_pred2z]
         labels2           = [float(i)/10 for i in label2]
         # toMatlab          = zip(x1, y1, labels2)
         best_fit          = plt.plot(labels2, labels2, 'r-', label="Correct Value")
-        # Error             = plt.bar(x1, abs(np.subtract(x1, y1)), 0.1, label="Error")
+        Error             = plt.bar(x1, abs(np.subtract(x1, y1)), 0.1, label="Error")
         Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Machine Learning Output")
 
         # mean = plt.plot(xValues, meanPredictions, label="Mean difference between actual and predicted")
@@ -140,6 +140,5 @@ for single in range(2):
         # rw().writeList2File(os.path.join(directory, Name + "_ML.txt"), toMatlab)
         # print "Saved for Matlab"
         plt.legend(handles, labels, loc=2)
-        plt.grid()
         # plt.savefig(os.path.join(directory, Name + '.png'), dpi=None, facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format=None, transparent=False, bbox_inches=None, pad_inches=0.1, frameon=None)
         plt.show()

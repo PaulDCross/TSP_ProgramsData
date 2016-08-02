@@ -105,19 +105,19 @@ for single in range(2):
 
         ax.set_xticks(major_ticks)
         ax.set_xticks(minor_ticks, minor=True)
+
         ax.set_yticks(major_ticks)
         ax.set_yticks(minor_ticks, minor=True)
 
-        ax.grid(which='both')
-        ax.grid(which='minor', alpha=0.2)
         ax.grid(which='major', alpha=1)
+        # ax.grid(which='minor', alpha=0.5)
 
-        # ax.set_xlim(0,2)
-        # ax.set_ylim(0,2)
+        # ax.set_xlim(-2,2)
+        # ax.set_ylim(-2,2)
 
         x1                = [float(i[1])/10 for i in y_pred3z]
         y1                = [float(i[:-3])/10 for i in y_pred3]
-        axlabels3           = [float(i[:-3])/10 for i in label3]
+        axlabels3         = [float(i[:-3])/10 for i in label3]
         toMatlab          = zip(x1, y1, axlabels3)
         best_fit          = plt.plot(axlabels3, axlabels3, 'r-', label="Correct Value")
         Error             = plt.bar(x1, abs(np.subtract(x1, y1)), 0.1, label="Error")
@@ -128,7 +128,6 @@ for single in range(2):
         # plt.annotate('Rotation Y', xy=(-5, -4), xytext=(-10, 0), arrowprops=dict(facecolor='black', shrink=0.2))
         # plt.annotate('Rotation X', xy=(5, 6), xytext=(0, 10), arrowprops=dict(facecolor='black', shrink=0.2))
         plt.legend(handles, labels, loc=2)
-        plt.grid()
         # plt.savefig(os.path.join(Name + '.png'), dpi=None, facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format=None, transparent=False, bbox_inches=None, pad_inches=0.1, frameon=None)
         plt.show()
 
