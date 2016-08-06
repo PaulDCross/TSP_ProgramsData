@@ -1,17 +1,16 @@
 # Standard imports
-from Pillow import *
+import os, sys
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../../libraries/MachineVisionAndmore")
+from PillowEdited import *
 import cv2
 import numpy as np
 import math
 import time
-import os
 import copy
-import sys
 from itertools import islice
 from operator import itemgetter
 from scipy.interpolate import interp1d
 from scipy import ndimage
-
 
 def makedir(DIR):
     if not os.path.exists(DIR):
@@ -82,7 +81,7 @@ for fold in range(Start, numFolders):
         # pathname1    = os.path.join(PictureFolder, "%003d" % first) + ".png"
         # FirstImage   = cv2.imread(pathname1)
 
-        for picture in range(2, last):
+        for picture in range(first, last):
             pathname1    = os.path.join(PictureFolder, "%003d" % first) + ".png"
             FirstImage   = cv2.imread(pathname1)
             pathname2    = os.path.join(PictureFolder, "%003d" % picture) + ".png"
@@ -108,6 +107,7 @@ for fold in range(Start, numFolders):
                 Y             = interp1d([0,11],[data1[0][2],data1[-1][2]])
             if (SecondImage.all()):
                 # Set up the second image
+                print fold, Types[Type], sign, first, picture
                 rec                 = Pillow(frame, refPt)
                 ROI, frame_with_box = rec.getFrame()
                 # Set the detectors parametors and detect blobs.
@@ -131,31 +131,11 @@ for fold in range(Start, numFolders):
                     makedir(Directory)
                     rw.writeList2File(os.path.join(Directory, "Data_%d.txt" % picture), DATA)
 
-                if 1 in DATAarray['State']:
-                    CoM.append(ndimage.measurements.center_of_mass(DATAarray['Displacement']))
-                    if len(CoM) > 20:
-                        CoM.pop(0)
-
-                # for i in range(len(DATAarray[:]) - 1):            # Number of rows.
-                #     for j in range(len(DATAarray[i][:]) - 1):     # Number of columns in each row.
-                #         # Calculate the Distance between the pins
-                #         d1y = math.sqrt((int(DATAarray[i + 1][j][1]) - int(DATAarray[i][j][1])) ** 2 + (int(DATAarray[i + 1][j][2]) - int(DATAarray[i][j][2])) ** 2)
-                #         d1x = math.sqrt((int(DATAarray[i][j + 1][1]) - int(DATAarray[i][j][1])) ** 2 + (int(DATAarray[i][j + 1][2]) - int(DATAarray[i][j][2])) ** 2)
-                #         d2y = math.sqrt((int(DATAarray[i + 1][j][4]) - int(DATAarray[i][j][4])) ** 2 + (int(DATAarray[i + 1][j][5]) - int(DATAarray[i][j][5])) ** 2)
-                #         d2x = math.sqrt((int(DATAarray[i][j + 1][4]) - int(DATAarray[i][j][4])) ** 2 + (int(DATAarray[i][j + 1][5]) - int(DATAarray[i][j][5])) ** 2)
-                #         # colour.append((d2x-d1x)); colour.append((d2y-d1y))
-                #         # m = ((255 - 100) / (max(colour) - min(colour)))
-                #         # cv2.line(Frame, (int(DATAarray[i][j][4]), int(DATAarray[i][j][5])), (int(DATAarray[i + 1][j][4]), int(DATAarray[i + 1][j][5])), (0, m * abs(d2y - d1y) + 100, 0), 5)
-                #         # cv2.line(Frame, (int(DATAarray[i][j][4]), int(DATAarray[i][j][5])), (int(DATAarray[i][j + 1][4]), int(DATAarray[i][j + 1][5])), (0, m * abs(d2x - d1x) + 100, 0), 5)
-                #         # cv2.rectangle(BearingImage, (int(DATAarray[i-1][j][13]), int(DATAarray[i-1][j][14])), (int(DATAarray[i][j-1][13]), int(DATAarray[i][j-1][14])), (255,255,255), -1)
-
                 for data in DATA:
                     # Drawing the bearings
                     colour.append(data['DifferencePinSize'])
                     yy2         = 255
                     yy1         = 20
-                    # pinSizeX2 = max(colour)
-                    # pinSizeX1 = min(colour)
                     pinSizeX2   = 3.0
                     pinSizeX1   = 0.0
                     pinDistX2   = 10.0
@@ -184,9 +164,7 @@ for fold in range(Start, numFolders):
                 # Give the frame a title and display the number of blobs.
                 cv2.putText(frame_with_box, pathname2, (5, width-15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
                 cv2.putText(frame_with_box, "Tracking %d pins" % DATA[-1][0], (5, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
-                # for xCoM, yCoM in CoM:
-                #     # print xCoM, yCoM
-                #     cv2.circle(BearingImage, (Y(yCoM), X(xCoM)), 2, (0,0,255), 2)
+
 
                 BlackImage[y1:y2, 0:x2-x1] = BearingImage
                 textsize = cv2.getTextSize(str(ls[index][picture]), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
@@ -194,16 +172,6 @@ for fold in range(Start, numFolders):
                 video = np.concatenate((BlackImage, frame_with_box), axis=1)
 
                 # Show the frames
-
-                # Proc1 = os.path.join(directory, "Processed", "Overview")
-                # Proc2 = os.path.join(directory, "Processed", "Bearings")
-                # makedir(Proc1)
-                # makedir(Proc2)
-                # cv2.imwrite(os.path.join(Proc1, "Overview%d.png" % picture), frame_with_box)
-                # cv2.imwrite(os.path.join(Proc2, "Bearings%d.png" % picture), BearingImage)
-                # cv2.imwrite("Overview%d.png" % picture, frame_with_box)
-                # cv2.imwrite("Bearings%d.png" % picture, BearingImage)
-
                 if Display:
                     cv2.imshow("Camera", video)
                     # cv2.imshow("Camera2", BearingImage)
@@ -217,10 +185,6 @@ for fold in range(Start, numFolders):
                     out.write(video)
                     if extrnl:
                         out2.write(extrnalImage)
-
-            print fold, first, picture
-            # if first <= 203:
-            #     first += 2
 
         if Record:
             out.release()

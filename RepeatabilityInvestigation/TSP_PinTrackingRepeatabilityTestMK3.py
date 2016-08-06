@@ -78,7 +78,7 @@ for fold in range(Start, numFolders):
 
         first = 1
         last  = (len([name for name in os.listdir(PictureFolder) if os.path.isfile(os.path.join(PictureFolder, name))]))
-        # last = 202
+
         pathname1  = os.path.join(PictureFolder, "%003d" % first) + ".png"
         FirstImage = cv2.imread(pathname1)
         # If the first picture is valid
@@ -92,8 +92,6 @@ for fold in range(Start, numFolders):
             xyn           = rw().readFile2List("Pin_Regions.txt")
             # Find the coordinates of the pins in the first image
             data1         = init.initialiseData(xyn)
-            X             = interp1d([0,8],[data1[0][1],data1[-1][1]])
-            Y             = interp1d([0,11],[data1[0][2],data1[-1][2]])
 
         for picture in range(first, last):
             pathname2    = os.path.join(PictureFolder, "%003d" % picture) + ".png"
@@ -136,8 +134,6 @@ for fold in range(Start, numFolders):
                         colour.append(data['DifferencePinSize'])
                         yy2         = 255
                         yy1         = 20
-                        # pinSizeX2 = max(colour)
-                        # pinSizeX1 = min(colour)
                         pinSizeX2   = 3.0
                         pinSizeX1   = 0.0
                         pinDistX2   = 10.0
@@ -171,6 +167,7 @@ for fold in range(Start, numFolders):
                 cv2.putText(BlackImage, str(ls[index][picture]), ((x2-x1)-textsize[0][0], width-15), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
                 video = np.concatenate((BlackImage, frame_with_box), axis=1)
 
+                # Show the frames
                 if Display:
                     cv2.imshow("Camera", video)
                     # cv2.imshow("Camera2", BearingImage)
@@ -187,14 +184,6 @@ for fold in range(Start, numFolders):
                     if extrnl:
                         # print extrnalImage.shape
                         out2.write(extrnalImage)
-
-                # except (ValueError, IndexError):
-                #     print len(keypoints)
-                #     cv2.imshow("Frame", cv2.drawKeypoints(ROI, keypoints, np.array([]), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS))
-                #     if cv2.waitKey(0) & 0xFF == 27:
-                #         cv2.destroyAllWindows()
-            # if first <= 203:
-            #     first += 2
 
         if Record:
             out.release()
