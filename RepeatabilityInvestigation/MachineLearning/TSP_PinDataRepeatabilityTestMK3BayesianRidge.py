@@ -36,7 +36,7 @@ for single in range(2):
     for set_ in range(10, 11): # for set_ in range(2, Sets):
         SaveDataLine  = []
         for step in range(1, 2): # for step in range(1, Sets):
-            gnb = linear_model.BayesianRidge(compute_score = True)
+            gnb = linear_model.BayesianRidge()
             train, test, labels1, labels2, label1, label2 = [], [], [], [], [], []
             for _, values in enumerate(data[['Displacement', 'DifferenceX', 'DifferenceY', 'Bearing', 'X', 'Y', 'Z', 'Rx', 'Ry', 'Rz', 'DataSet', 'State', 'Type', 'Depth']]):
                 if values['Type'][0] == 'Z':
