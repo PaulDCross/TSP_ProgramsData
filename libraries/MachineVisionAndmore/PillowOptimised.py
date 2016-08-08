@@ -27,9 +27,9 @@ class Pillow:
 
         # Convert the frame to GRAY, and blur it
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        # blur = cv2.GaussianBlur(image, (5,5), 0)
-        # ret, thresholded = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU) #200 255
-        thresholded = cv2.threshold(image, 200, 255, cv2.THRESH_BINARY)[1]
+        blur = cv2.GaussianBlur(image, (5,5), 0)
+        ret, thresholded = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU) #200 255
+        # thresholded = cv2.threshold(image, 200, 255, cv2.THRESH_BINARY)[1]
         # Dialate the thresholded image to fill in holes
         image = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, None, iterations = 1)
         ROI = cv2.dilate(image, None, iterations = 4)

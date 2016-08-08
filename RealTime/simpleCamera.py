@@ -4,18 +4,23 @@ import threading
 import time
 import sys
 
+refPt = [(124, 83), (1057, 585)]
+x1, y1 = refPt[0][0], refPt[0][1]
+x2, y2 = refPt[1][0], refPt[1][1]
 # cam1 = cv2.VideoCapture(0)
 cam2 = cv2.VideoCapture(1)
 cam2.set(3, 1200)            # horizontal pixels
 cam2.set(4, 720)             # vertical pixels
 while True:
     _, frame = cam2.read()
-    # img = cam1.read()[1]
-    # (h, w) = img.shape[:2]
-    # M = cv2.getRotationMatrix2D((w / 2, h / 2), -90, 1)
-    # image = cv2.warpAffine(img, M, (w, h))[:, 80:w-80]
-    # cv2.imshow("Window1", image)
-    cv2.imshow("Window2", frame)
+    if _:
+        # img = cam1.read()[1]
+        # (h, w) = img.shape[:2]
+        # M = cv2.getRotationMatrix2D((w / 2, h / 2), -90, 1)
+        # image = cv2.warpAffine(img, M, (w, h))[:, 80:w-80]
+        # cv2.imshow("Window1", image)
+        frame_with_box = cv2.rectangle(frame, (x1,y1), (x2,y2), (0,255,0), 1)
+        cv2.imshow("Window2", frame_with_box)
     if cv2.waitKey(5) & 0xFF == 27:
         break
         # cam1.release()

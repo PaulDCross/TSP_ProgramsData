@@ -76,24 +76,24 @@ while True:
             # img = cv2.add(frame, mask)
 
 
-            # Calculate the distance between the pins and display the distance as a change of colour.
+            # # Calculate the distance between the pins and display the distance as a change of colour.
             # DATAsplit = chunker(DATA, Columns)
             # [Splits.append(Splits[-1]) for Splits in DATAsplit]
             # DATAsplit.append(DATAsplit[-1])
             # DATAarray = np.array(DATAsplit)
 
             # for i in range(len(DATAarray[:]) - 1):            # Number of rows.
-                # for j in range(len(DATAarray[i][:]) - 1):     # Number of columns in each row.
-                    # Calculate the Distance between the pins
-                    # d1y = math.sqrt((int(DATAarray[i + 1][j][1]) - int(DATAarray[i][j][1])) ** 2 + (int(DATAarray[i + 1][j][2]) - int(DATAarray[i][j][2])) ** 2)
-                    # d1x = math.sqrt((int(DATAarray[i][j + 1][1]) - int(DATAarray[i][j][1])) ** 2 + (int(DATAarray[i][j + 1][2]) - int(DATAarray[i][j][2])) ** 2)
-                    # d2y = math.sqrt((int(DATAarray[i + 1][j][4]) - int(DATAarray[i][j][4])) ** 2 + (int(DATAarray[i + 1][j][5]) - int(DATAarray[i][j][5])) ** 2)
-                    # d2x = math.sqrt((int(DATAarray[i][j + 1][4]) - int(DATAarray[i][j][4])) ** 2 + (int(DATAarray[i][j + 1][5]) - int(DATAarray[i][j][5])) ** 2)
-                    # colour.append((d2x-d1x)); colour.append((d2y-d1y))
-                    # m = ((255 - 100) / (max(colour) - min(colour)))
-                    # cv2.line(Frame, (int(DATAarray[i][j][4]), int(DATAarray[i][j][5])), (int(DATAarray[i + 1][j][4]), int(DATAarray[i + 1][j][5])), (0, m * abs(d2y - d1y) + 100, 0), 5)
-                    # cv2.line(Frame, (int(DATAarray[i][j][4]), int(DATAarray[i][j][5])), (int(DATAarray[i][j + 1][4]), int(DATAarray[i][j + 1][5])), (0, m * abs(d2x - d1x) + 100, 0), 5)
-                    # cv2.rectangle(BearingImage, (int(DATAarray[i-1][j][13]), int(DATAarray[i-1][j][14])), (int(DATAarray[i][j-1][13]), int(DATAarray[i][j-1][14])), (255,255,255), -1)
+            #     for j in range(len(DATAarray[i][:]) - 1):     # Number of columns in each row.
+            #         # Calculate the Distance between the pins
+            #         d1y = math.sqrt((int(DATAarray[i + 1][j][1]) - int(DATAarray[i][j][1])) ** 2 + (int(DATAarray[i + 1][j][2]) - int(DATAarray[i][j][2])) ** 2)
+            #         d1x = math.sqrt((int(DATAarray[i][j + 1][1]) - int(DATAarray[i][j][1])) ** 2 + (int(DATAarray[i][j + 1][2]) - int(DATAarray[i][j][2])) ** 2)
+            #         d2y = math.sqrt((int(DATAarray[i + 1][j][4]) - int(DATAarray[i][j][4])) ** 2 + (int(DATAarray[i + 1][j][5]) - int(DATAarray[i][j][5])) ** 2)
+            #         d2x = math.sqrt((int(DATAarray[i][j + 1][4]) - int(DATAarray[i][j][4])) ** 2 + (int(DATAarray[i][j + 1][5]) - int(DATAarray[i][j][5])) ** 2)
+            #         colour.append((d2x-d1x)); colour.append((d2y-d1y))
+            #         m = ((255 - 100) / (max(colour) - min(colour)))
+            #         cv2.line(Frame, (int(DATAarray[i][j][4]), int(DATAarray[i][j][5])), (int(DATAarray[i + 1][j][4]), int(DATAarray[i + 1][j][5])), (0, m * abs(d2y - d1y) + 100, 0), 5)
+            #         cv2.line(Frame, (int(DATAarray[i][j][4]), int(DATAarray[i][j][5])), (int(DATAarray[i][j + 1][4]), int(DATAarray[i][j + 1][5])), (0, m * abs(d2x - d1x) + 100, 0), 5)
+            #         # cv2.rectangle(BearingImage, (int(DATAarray[i-1][j][13]), int(DATAarray[i-1][j][14])), (int(DATAarray[i][j-1][13]), int(DATAarray[i][j-1][14])), (255,255,255), -1)
 
             for data in DATA:
                 # Drawing the bearings
@@ -110,10 +110,14 @@ while True:
                 mPD       = ((yy2 - yy1) / (pinDistX2 - pinDistX1))
                 if superimposeLines:
                     cv2.line(BearingImage, (int(data[1]), int(data[2])), (int((data[1]) - 200 * math.sin(math.radians(data[11]))), int((data[2]) - 200 * math.cos(math.radians(data[11])))), (mPD * abs(data[10]) + yy1, mPD * abs(data[10]) + yy1, mPD * abs(data[10]) + yy1), 1)
-                cv2.line(BearingImage, (int(data[1]), int(data[2])), (int((data[1]) + 20 * math.sin(math.radians(data[11]))), int((data[2]) + 20 * math.cos(math.radians(data[11])))), (mPD * abs(data[10]) + yy1, mPD * abs(data[10]) + yy1, mPD * abs(data[10]) + yy1), 1)
+                cv2.line(BearingImage, (int(data[1]), int(data[2])), (int((data[1]) + 30 * math.sin(math.radians(data[11]))), int((data[2]) + 30 * math.cos(math.radians(data[11])))), (mPD * abs(data[10]) + yy1, mPD * abs(data[10]) + yy1, mPD * abs(data[10]) + yy1), 1)
                 cv2.circle(BearingImage, (int((data[1]) + 10 * math.sin(math.radians(data[11]))), int((data[2]) + 10 * math.cos(math.radians(data[11])))), 1, (mPD * abs(data[10]) + yy1, 0, 0), 1)
+                # Displacement
                 cv2.putText(BearingImage, "%.1f" % data[10], (int(data[1]) - 14, int(data[2]) - 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, mPD * abs(data[10]) + yy1, 0), 1)
-                cv2.putText(BearingImage, "%.2f" % data[12], (int(data[1]) - 14, int(data[2]) + 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, mPS * abs(data[12]) + yy1), 1)
+                # Bearing
+                # cv2.putText(BearingImage, "%.2f" % data[12], (int(data[1]) - 14, int(data[2]) + 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, mPS * abs(data[12]) + yy1), 1)
+                # Number
+                cv2.putText(BearingImage, "%.2f" % data[0], (int(data[1]) - 14, int(data[2]) + 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1)
                 # Draw on the Image
                 cv2.putText(Frame, "%d" % data[0], (int(data[4]) - 7, int(data[5]) - 7), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1, 8)
                 if data[7]:
@@ -140,7 +144,7 @@ while True:
 
 
 
-    k = cv2.waitKey(75) & 0xFF
+    k = cv2.waitKey(5) & 0xFF
     if k == 32:
         initialize = 1
     if k == 9:
