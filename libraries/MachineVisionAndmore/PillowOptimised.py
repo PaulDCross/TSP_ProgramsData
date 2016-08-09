@@ -99,13 +99,13 @@ class Pillow:
                 else:
                     bearing = 0
 
-            if (distance < 1 or distance > 25):
+            if (distance < 2.5 or distance > 25):
                 state = 0.0
             else:
                 state = 1.0
 
             bearing = round(bearing*(180/math.pi),1)
-            distance = round(math.pow(distance,2),1)
+            # distance = round(math.pow(distance,2),1)
             self.DistanceBearing.append([data1[i][0], state, dx[i], dy[i], distance, bearing, changeinSize])
             self.DistanceBearing.sort(key = itemgetter(0),reverse = False)
 
@@ -340,7 +340,6 @@ class Pins(): # Cuts up the image of pins
             crosspoints[i] = crosspoints[i]+(i+1,)
         crosspoints = map(list, crosspoints)
         return Columns, Rows, crosspoints
-
 
 """
         w = 600

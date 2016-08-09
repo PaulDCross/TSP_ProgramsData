@@ -4,13 +4,22 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../libraries/Mac
 from PillowOptimised import *
 import cv2
 import numpy as np
+import numpy.ma as ma
 import math
 import time
 import copy
+np.set_printoptions(precision=3, suppress=True, linewidth = 150)
 # from operator import itemgetter
 # from scipy.interpolate import interp1d
 # from scipy import ndimage
+def makedir(DIR):
+    if not os.path.exists(DIR):
+        os.makedirs(DIR)
+        time.sleep(0.5)
 
+directory = 'Videos'
+
+makedir(directory)
 rw = rw()
 # refPt = click_and_crop().crop_main()
 # refPt = [(22, 97), (588, 429)]
@@ -24,15 +33,23 @@ colour = [1]
 
 cam = cv2.VideoCapture(1)
 cam.set(3, 1200)            # horizontal pixels
-cam.set(4, 720)            # vertical pixels
+cam.set(4, 720)             # vertical pixels
 time.sleep(1)
 initialize = 1
+record = 0
 while True:
     ret, image   = cam.read()
     # If the first picture is valid
-    print ret
     if ret:
+        if record:
+            # Define the codec and create VideoWriter object
+            fps               = 20
+            numberofVideos    = len([name for name in os.listdir(directory) if os.path.isfile(os.path.join(directory, name))])
+            fourcc            = cv2.VideoWriter_fourcc(*'DIVX')
+            VideoFrame        = cv2.VideoWriter(os.path.join(directory + 'RealTime_{0}FPS_{1}'.format(fps, numberofVideos) + '.avi'), fourcc, fps, (1578,512))
+            record, recording = 0, 1
         if initialize:
+            print "Initialising"
             # Setup the first image
             # image1 = image
             init               = Pillow(image, refPt)
@@ -45,7 +62,6 @@ while True:
             data1              = init.initialiseData(xyn)
             initialize         = 0
             superimposeLines   = 0
-            # mask = np.zeros_like(image1)
         try:
             # Set up the second image
             rec                 = Pillow(image, refPt)
@@ -57,9 +73,18 @@ while True:
             Frame               = cv2.drawKeypoints(Frame, keypoints, np.array([]), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
             data2               = rec.getDataSet2(keypoints, xyn)
             DistanceBearing     = rec.measurements(data1, data2, len(keypoints))
-            DATA                = [data1[i] + data2[i][1:] + DistanceBearing[i][1:] + xyn[i][:-1] for i in xrange(len(keypoints))]
+            DATA                = np.array([tuple(data) for data in [data1[i] + data2[i][1:] + DistanceBearing[i][1:] for i in xrange(len(keypoints))]], dtype=[('Pin Number', 'f4'), ('Reference X Coordinate', 'f4'), ('Reference Y Coordinate', 'f4'), ('Reference Pin Diameter', 'f4'), ('New X Coordinate', 'f4'), ('New Y Coordinate', 'f4'), ('New Pin Diameter', 'f4'), ('State', 'bool'), ('DifferenceX','f4'), ('DifferenceY','f4'), ('Displacement','f4'), ('Bearing','f4'), ('DifferencePinSize','f4')])#  + xyn[i][:-1]
             BlackImage          = np.zeros((image.shape[0], x2-x1, 3), np.uint8)#; BlackImage.fill(255)
             BearingImage        = copy.deepcopy(BlackImage[y1:y2, 0:x2-x1])
+
+            mask                = [np.array([data[7]])*7 for data in DATA]
+            findCentre          = np.array([np.array(data)[['Pin Number', 'New X Coordinate', 'New Y Coordinate', 'DifferenceX', 'DifferenceY', 'Displacement', 'Bearing']] for data in DATA])
+            findCentre          = findCentre.compress(np.ravel(mask))
+            if len(findCentre) > 4:
+                print np.mean(findCentre['New X Coordinate'] + findCentre['DifferenceX']), np.mean(findCentre['New Y Coordinate'] + findCentre['DifferenceY'])
+                # cv2.circle(BearingImage, (int(np.mean(findCentre['New X Coordinate'] + findCentre['DifferenceX'])), int(np.mean(findCentre['New Y Coordinate'] + findCentre['DifferenceY']))), 5, (0, 255, 255), -1)
+                # cv2.circle(BearingImage, (int(np.mean(findCentre['New X Coordinate'] + findCentre['DifferenceX'])), int(np.mean(findCentre['New Y Coordinate'] + findCentre['DifferenceY']))), 20, (0, 255, 255), 2)
+
 
             # coordinates = np.array([keypoints[i-1].pt for i in xrange(len(keypoints))])
             # p1, st, err = cv2.calcOpticalFlowPyrLK(cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY), cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), coordinates, None, winSize=(15, 15), maxLevel=2, criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03))
@@ -117,7 +142,7 @@ while True:
                 # Bearing
                 # cv2.putText(BearingImage, "%.2f" % data[12], (int(data[1]) - 14, int(data[2]) + 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, mPS * abs(data[12]) + yy1), 1)
                 # Number
-                cv2.putText(BearingImage, "%.2f" % data[0], (int(data[1]) - 14, int(data[2]) + 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1)
+                cv2.putText(BearingImage, "%d" % data[0], (int(data[1]) - 14, int(data[2]) + 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (150 - (mPD * abs(data[10]) + yy1), 150 - (mPD * abs(data[10]) + yy1), 150), 1)
                 # Draw on the Image
                 cv2.putText(Frame, "%d" % data[0], (int(data[4]) - 7, int(data[5]) - 7), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1, 8)
                 if data[7]:
@@ -133,23 +158,49 @@ while True:
             # Display the number of blobs.
             cv2.putText(frame_with_box, "Tracking %d pins" % DATA[-1][0], (5, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
             BlackImage[y1:y2, 0:x2-x1] = BearingImage
-            video = np.concatenate((BlackImage, frame_with_box), axis=1)
+            video                      = np.concatenate((BlackImage, frame_with_box), axis=1)
+
+            VectorField = copy.deepcopy(BearingImage)
+            # Adding some black space to push the pins away from the edge of the frame
+            blackBar    = np.zeros((150, VectorField.shape[1], 3), np.uint8)
+            greybar     = np.zeros((2, VectorField.shape[1], 3), np.uint8); greybar.fill(50)
+            VectorField = np.concatenate((VectorField,greybar, blackBar), axis=0)
+
+            # Draw reference Blob
+            fontsize = 0.4; Separation = 30
+            BlobCoords = (VectorField.shape[1]-100, VectorField.shape[0]-75)
+            cv2.circle(VectorField, BlobCoords, 4, (255,255,255), -1)
+            cv2.line(VectorField, BlobCoords, (BlobCoords[0]+20, BlobCoords[1]-20), (255, 255, 255), 2)
+
+            DisplSize = cv2.getTextSize("Displacement", cv2.FONT_HERSHEY_SIMPLEX, fontsize, 1)
+            cv2.putText(VectorField, "Displacement", (BlobCoords[0] - (DisplSize[0][0]/2), BlobCoords[1] - DisplSize[0][1] - Separation), cv2.FONT_HERSHEY_SIMPLEX, fontsize, (255,255,255))
+            PinNumSize = cv2.getTextSize("Papillae Pin Number", cv2.FONT_HERSHEY_SIMPLEX, fontsize, 1)
+            cv2.putText(VectorField, "Papillae Pin Number", (BlobCoords[0] - (PinNumSize[0][0]/2), BlobCoords[1] + PinNumSize[0][1] + Separation), cv2.FONT_HERSHEY_SIMPLEX, fontsize, (255,255,255))
             # Show the frames
-            cv2.imshow("Camera", video)
+            # cv2.imshow("Camera", video)
             # cv2.imshow('frame2', ROI2)
             # cv2.imshow("Overview", frame_with_box)
-            # cv2.imshow("Bearings", BearingImage)
+            cv2.imshow("Bearings", VectorField)
+            if recording:
+                VideoFrame.write(VectorField)
         except IndexError:
             initialize = 1
 
-
+    if not ret:
+        print "Camera not attached or in use."
+        break
 
     k = cv2.waitKey(5) & 0xFF
     if k == 32:
         initialize = 1
     if k == 9:
-        superimposeLines = ~superimposeLines
+        superimposeLines = ~superimposeLines1
+    if k == 82
+        record = 1
+        recording = 0
+        VideoFrame.release()
     if k == 27:
         cam.release()
+        VideoFrame.release()
         cv2.destroyAllWindows()
         break
