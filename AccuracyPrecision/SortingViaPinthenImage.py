@@ -50,6 +50,8 @@ MADY = np.array([[ np.mean( abs(line - np.mean(line))) for line in section] for 
 depth = np.array([[np.mean(line) for line in section] for section in np.array([np.array([c for c in b if len(c)>3]) for b in Z1 if len([c for c in b if len(c)>3])>3])])
 pinName = np.array([[np.mean(line) for line in section] for section in np.array([np.array([c for c in b if len(c)>3]) for b in Z2 if len([c for c in b if len(c)>3])>3])])
 
+X = np.array([[ line for line in section] for section in np.array([np.array([c for c in b if len(c)>3]) for b in X if len([c for c in b if len(c)>3])>3])])
+Y = np.array([[ line for line in section] for section in np.array([np.array([c for c in b if len(c)>3]) for b in Y if len([c for c in b if len(c)>3])>3])])
 
 zMADXdepth      = np.array([map(list, zip(MADX[i], depth[i], pinName[i])) for i in range(len(MADX))])
 raveledX        = [pinDepth for pinRun in zMADXdepth for pinDepth in pinRun]
@@ -63,6 +65,6 @@ sortedMADYdepth = sorted(raveledY, key=lambda l: l[1])
 groupingY       = [list(j) for i,j in groupby(sortedMADYdepth, key=lambda l: l[1])]
 MADYPINS        = np.array([(np.mean([pin[0] for pin in DEPTH]), np.mean([pin[1] for pin in DEPTH])) for DEPTH in groupingY])
 
-sio.savemat("ZippedMADXYDepthName.mat", {'MADX' : MADX, 'Depth' : depth, "PinName" : pinName, "MaddeningX" : MADXPINS, "MaddeningY" : MADYPINS})
+sio.savemat("ZippedMADXYDepthName.mat", {'X' : X, 'Y' : Y, 'MADX' : MADX, 'Depth' : depth, "PinName" : pinName, "MaddeningX" : MADXPINS, "MaddeningY" : MADYPINS})
 # np.array([np.array([c for c in b if len(c)>3]) for b in X if len([c for c in b if len(c)>3])>3])
 # np.array([np.array([c for c in b if len(c)>3]) for b in Y if len([c for c in b if len(c)>3])>3])
