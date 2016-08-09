@@ -43,11 +43,18 @@ class ABBProgram:
         dictionary["cartesian"]                         = OrderedDict()
         d                                               = dictionary["cartesian"]
         self.error                                      = 5
-        # Make dictionary.
-        [self.get_coordinates(d, i, self.distance, self.Step, copy.deepcopy(self.HoverPosition)) for i in xrange(6)]
-        dic.put(d)
-        print([len(d[i]) for i in self.movType])
-        print self.HoverPosition
+        if self.TYPE in ('z'):
+            # Make dictionary.
+            [self.get_coordinatesTranslation(d, i, self.distance, self.Step, copy.deepcopy(self.HoverPosition)) for i in xrange(6)]
+            dic.put(d)
+            print([len(d[i]) for i in self.movType])
+            print self.HoverPosition
+        if self.TYPE in ('roll', 'pitch'):
+            # Make dictionary.
+            [self.get_coordinatesRotation(d, i, self.distance, self.Step, copy.deepcopy(self.HoverPosition)) for i in xrange(6)]
+            dic.put(d)
+            print([len(d[i]) for i in self.movType])
+            print self.HoverPosition
         # Do you wish to start the experment of do you wish to abort now.
         while True:
             Start = raw_input('Start sequence? y/n: ')
@@ -61,7 +68,12 @@ class ABBProgram:
         self.HoverPosition = [self.HoverPosition[:3], self.HoverPosition[3:]]
 
         if Start == "y":
-            DIR = os.path.join("Sequences", "TransZ", "EE%.1f" % Tool[0][2], "%.1fmm" % self.height)
+            if self.TYPE in ('z'):
+                DIR = os.path.join("Sequences", "TransZ", "EE%.1f" % Tool[0][2], "%.1fmm" % self.height)
+            if self.TYPE in ('roll'):
+                DIR = os.path.join("Sequences", "Roll", "EE%.1f" % Tool[0][2], "%.1fmm" % self.height)
+            if self.TYPE in ('pitch'):
+                DIR = os.path.join("Sequences", "Pitch", "EE%.1f" % Tool[0][2], "%.1fmm" % self.height)
             self.makedir(DIR)
             self.numFolders = int(1 + len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
             self.DIR        = os.path.join(DIR, "%02d" % self.numFolders)
@@ -189,7 +201,7 @@ class ABBProgram:
                 temp -= step
         return array
 
-    def get_coordinates(self, d, i, distance, step, touchDownPos):
+    def get_coordinatesTranslation(self, d, i, distance, step, touchDownPos):
         XMovement = []
         touchDownPos[2] = self.height
         for newValue in self.linspace(touchDownPos[i], touchDownPos[i] - distance, step, "-"):
@@ -198,6 +210,22 @@ class ABBProgram:
             X[i] = round(newValue, 1)
             XMovement.append(self.d2q(X, 5))
         for newValue in self.linspace(touchDownPos[i] - distance, touchDownPos[i], step, "+"):
+            # print newValue
+            X    = copy.deepcopy(touchDownPos)
+            X[i] = round(newValue, 1)
+            XMovement.append(self.d2q(X, 5))
+        d[self.movType[i]] = XMovement
+        return d
+
+    def get_coordinatesRotation(self, d, i, distance, step, touchDownPos):
+        XMovement = []
+        touchDownPos[2] = self.height
+        for newValue in self.linspace(touchDownPos[i], touchDownPos[i] + distance, step, "+"):
+            # print newValue
+            X    = copy.deepcopy(touchDownPos)
+            X[i] = round(newValue, 1)
+            XMovement.append(self.d2q(X, 5))
+        for newValue in self.linspace(touchDownPos[i], touchDownPos[i] - distance, step, "-"):
             # print newValue
             X    = copy.deepcopy(touchDownPos)
             X[i] = round(newValue, 1)
@@ -246,9 +274,10 @@ class ABBProgram:
                     a = self.R.get_cartesian()
                     print a, self.HoverPosition
                 count += 1
-            self.R.set_speed(speed=[0.5, 0.5, 50, 50])
+            speedVariable = 2
+            self.R.set_speed(speed=[speedVariable, speedVariable, 50, 50])
             with print_lock:
-                print "Slowing Down to 1% 'hover'"
+                print "Slowing Down to {0}% 'hover'".format(speedVariable)
             cartesian    = self.R.get_cartesian()
             euler        = self.r2d(t.euler_from_quaternion(cartesian[1]))
             euler        = [round(euler[i], 1) for i in range(len(euler))]
@@ -269,7 +298,7 @@ class ABBProgram:
                 dic.put(d)
                 data = d[self.movType[i]]
                 DIR  = os.path.join(self.DIR, self.movType[i])
-                self.makedir(DIR)
+                # self.makedir(DIR)
                 self.directory = Queue.LifoQueue()
                 self.directory.put(DIR)
 
@@ -354,8 +383,10 @@ class ABBProgram:
                 dic.task_done()
                 dic.put(d)
                 data = d[self.movType[i]]
+                self.printDateTime()
+                print >> self.f, data
                 DIR  = os.path.join(self.DIR, self.movType[i], "P")
-                self.makedir(DIR)
+                # self.makedir(DIR)
                 self.directory = Queue.LifoQueue()
                 self.directory.put(DIR)
             # print >> self.f, "\n############################################################################################################"
@@ -393,12 +424,12 @@ class ABBProgram:
                         print "Result: ", euler
                     print "Finished Movement"
                 time.sleep(0.2)
-                saveImgEvent.clear()
-                if not saveImgEvent.wait(1):
-                    break
+                # saveImgEvent.clear()
+                # if not saveImgEvent.wait(1):
+                #     break
             with Newtons_lock:
                 DIR            = os.path.join(DIR[:-2], "N")
-                self.makedir(DIR)
+                # self.makedir(DIR)
                 self.directory = Queue.LifoQueue()
                 self.directory.put(DIR)
             # print >> self.f, "\n############################################################################################################"
@@ -436,9 +467,9 @@ class ABBProgram:
                         print "Result: ", euler
                     print "Finished Movement"
                 time.sleep(0.2)
-                saveImgEvent.clear()
-                if not saveImgEvent.wait(1):
-                    break
+                # saveImgEvent.clear()
+                # if not saveImgEvent.wait(1):
+                #     break
 
 
 
@@ -464,7 +495,7 @@ def main():
     if StartEvent.wait(0):
         if Robot.TYPE in ('z'):
             [Robot.runMainTranslation(unit, i) for i in xrange(2, 3)]
-        if Robot.TYPE in ('roll', 'pitch'):
+        if Robot.TYPE in ('roll'):
             [Robot.runMainRotation(degree, i) for i in xrange(3, 4)]
         if Robot.TYPE in ('pitch'):
             [Robot.runMainRotation(degree, i) for i in xrange(4, 5)]
