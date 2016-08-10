@@ -13,6 +13,7 @@ xlabel('Depth from start position (mm)');
 % Create ylabel
 ylabel('Average Mean Absolute Deviation (Pixels)');
 scatter(MaddeningX(:,2)/10,MaddeningX(:,1), 'xb')
+save2pdf('MeanAbsoluteDeviationofStatePinsX')
 
 fig2 = figure;
 % Create axes
@@ -26,3 +27,4 @@ xlabel('Depth from start position (mm)');
 % Create ylabel
 ylabel('Average Mean Absolute Deviation (Pixels)');
 scatter(MaddeningY(:,2)/10,MaddeningY(:,1), 'xb')
+save2pdf('MeanAbsoluteDeviationofStatePinsY')
