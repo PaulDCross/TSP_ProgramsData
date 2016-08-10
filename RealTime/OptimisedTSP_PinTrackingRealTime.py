@@ -36,18 +36,21 @@ cam.set(3, 1200)            # horizontal pixels
 cam.set(4, 720)             # vertical pixels
 time.sleep(1)
 initialize = 1
-record = 0
+record, recording = 0, 0
 while True:
     ret, image   = cam.read()
     # If the first picture is valid
     if ret:
         if record:
+            print "Setting up video"
             # Define the codec and create VideoWriter object
-            fps               = 20
+            fps               = 10
             numberofVideos    = len([name for name in os.listdir(directory) if os.path.isfile(os.path.join(directory, name))])
             fourcc            = cv2.VideoWriter_fourcc(*'DIVX')
-            VideoFrame        = cv2.VideoWriter(os.path.join(directory + 'RealTime_{0}FPS_{1}'.format(fps, numberofVideos) + '.avi'), fourcc, fps, (1578,512))
+            VideoFrame        = cv2.VideoWriter(os.path.join(directory, 'RealTime_{0}FPS_{1}'.format(fps, numberofVideos) + '.avi'), fourcc, fps, (933,654))
             record, recording = 0, 1
+            print fps, numberofVideos
+            print "Recording"
         if initialize:
             print "Initialising"
             # Setup the first image
@@ -78,12 +81,12 @@ while True:
             BearingImage        = copy.deepcopy(BlackImage[y1:y2, 0:x2-x1])
 
             mask                = [np.array([data[7]])*7 for data in DATA]
-            findCentre          = np.array([np.array(data)[['Pin Number', 'New X Coordinate', 'New Y Coordinate', 'DifferenceX', 'DifferenceY', 'Displacement', 'Bearing']] for data in DATA])
+            findCentre          = np.array([np.array(data)[['Pin Number', 'Reference X Coordinate', 'Reference Y Coordinate', 'DifferenceX', 'DifferenceY', 'Displacement', 'Bearing']] for data in DATA])
             findCentre          = findCentre.compress(np.ravel(mask))
-            if len(findCentre) > 4:
-                print np.mean(findCentre['New X Coordinate'] + findCentre['DifferenceX']), np.mean(findCentre['New Y Coordinate'] + findCentre['DifferenceY'])
-                # cv2.circle(BearingImage, (int(np.mean(findCentre['New X Coordinate'] + findCentre['DifferenceX'])), int(np.mean(findCentre['New Y Coordinate'] + findCentre['DifferenceY']))), 5, (0, 255, 255), -1)
-                # cv2.circle(BearingImage, (int(np.mean(findCentre['New X Coordinate'] + findCentre['DifferenceX'])), int(np.mean(findCentre['New Y Coordinate'] + findCentre['DifferenceY']))), 20, (0, 255, 255), 2)
+            # if len(findCentre) > 4:
+            #     print np.mean(findCentre['Reference X Coordinate'] + findCentre['DifferenceX']), np.mean(findCentre['Reference Y Coordinate'] + findCentre['DifferenceY'])
+            #     cv2.circle(BearingImage, (int(np.mean(findCentre['Reference X Coordinate'] + findCentre['DifferenceX'])), int(np.mean(findCentre['Reference Y Coordinate'] + findCentre['DifferenceY']))), 5, (0, 255, 255), -1)
+            #     cv2.circle(BearingImage, (int(np.mean(findCentre['Reference X Coordinate'] + findCentre['DifferenceX'])), int(np.mean(findCentre['Reference Y Coordinate'] + findCentre['DifferenceY']))), 20, (0, 255, 255), 2)
 
 
             # coordinates = np.array([keypoints[i-1].pt for i in xrange(len(keypoints))])
@@ -181,6 +184,7 @@ while True:
             # cv2.imshow('frame2', ROI2)
             # cv2.imshow("Overview", frame_with_box)
             cv2.imshow("Bearings", VectorField)
+            # print VectorField.shape
             if recording:
                 VideoFrame.write(VectorField)
         except IndexError:
@@ -194,13 +198,18 @@ while True:
     if k == 32:
         initialize = 1
     if k == 9:
-        superimposeLines = ~superimposeLines1
-    if k == 82
-        record = 1
-        recording = 0
-        VideoFrame.release()
-    if k == 27:
+        superimposeLines = ~superimposeLines
+    if k == 114:
+        print "Key pressed"
+        if recording:
+            print "Stopped recording"
+            recording = 0
+            VideoFrame.release()
+        else:
+            record = 1
+    elif k == 27:
+        if recording:
+            VideoFrame.release()
         cam.release()
-        VideoFrame.release()
         cv2.destroyAllWindows()
         break
