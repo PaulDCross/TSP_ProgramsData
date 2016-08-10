@@ -98,9 +98,9 @@ for single in range(2):
     # else:
     #     Name = "TSP_Rotation_DistanceX_and_DistanceY"
     if single:
-        Name = "Using Pin Displacement for the features of the Regression Method"
+        Name = "Using Pin Displacement for the features of the Regression Model"
     else:
-        Name = "Using Delta X and Delta Y for the features of the Regression Method"
+        Name = "Using Delta X and Delta Y for the features of the Regression Model"
     # if single:
     #     Name = "TSP_Rotation_Displacement_Otsu"
     # else:
