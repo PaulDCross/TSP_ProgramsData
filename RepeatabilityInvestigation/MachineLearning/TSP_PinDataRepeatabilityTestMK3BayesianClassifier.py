@@ -117,17 +117,17 @@ for single in range(2):
         ax.set_yticks(minor_ticks, minor=True)
 
         ax.grid(which='major', alpha=1)
-        # ax.grid(which='minor', alpha=0.5)
 
-        # ax.set_xlim(3.5,5)
-        # ax.set_ylim(3.5,5)
+        ax.grid(which='minor', alpha=0.5)
+        ax.set_xlim(3.5,5)
+        ax.set_ylim(3.5,5)
 
         x1                = [float(i[1])/10 for i in y_pred2z]
         y1                = [float(i[0])/10 for i in y_pred2z]
         labels2           = [float(i)/10 for i in label2]
         # toMatlab          = zip(x1, y1, labels2)
         best_fit          = plt.plot(labels2, labels2, 'r-', label="Correct Value")
-        Error             = plt.bar(x1, abs(np.subtract(x1, y1)), 0.1, label="Error")
+        # Error             = plt.bar(x1, abs(np.subtract(x1, y1)), 0.1, label="Error")
         Classifier_Output = plt.scatter(x1, y1, c='blue', marker="x", label="Machine Learning Output")
 
         # mean = plt.plot(xValues, meanPredictions, label="Mean difference between actual and predicted")

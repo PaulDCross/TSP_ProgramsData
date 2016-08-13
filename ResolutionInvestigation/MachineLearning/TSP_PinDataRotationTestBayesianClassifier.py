@@ -37,7 +37,7 @@ for single in range(2):
             gnb = GaussianNB()
             train, test, labels1, labels2, labels3, label1, label2, label3 = [], [], [], [], [], [], [], []
             for _, values in enumerate(data[['Displacement', 'DifferenceX', 'DifferenceY', 'Bearing', 'X', 'Y', 'Z', 'Rx', 'Ry', 'Rz', 'DataSet', 'State', 'Type', 'Sign']]):
-                if values['Type'][0] == 'Ry':
+                if values['Type'][0] == 'Rx':
                     if np.count_nonzero(values['State']) > 4:
                         if (round((data[values['Type'][0]][0][0] - abs(values[values['Type'][0]][0]))*10, 0)) % step == 0:
                             if 0 < values['DataSet'][0] < set_:
@@ -110,8 +110,8 @@ for single in range(2):
         ax.set_yticks(minor_ticks, minor=True)
 
         ax.grid(which='major', alpha=1)
-        # ax.grid(which='minor', alpha=0.5)
 
+        # ax.grid(which='minor', alpha=0.5)
         # ax.set_xlim(-2,2)
         # ax.set_ylim(-2,2)
 
