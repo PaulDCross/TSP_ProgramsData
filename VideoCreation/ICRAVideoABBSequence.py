@@ -119,17 +119,7 @@ class ABBProgram:
             HH = 340.0
         else:
             HH = 400.0
-        print Tool
-        # Choose the height that you wish to run at.
-        while True:
-            try:
-                height = float(raw_input("What is the Z value e.g. {0} is just above the Pillow: ".format(HH)))
-                if 330 <= height <= 450:
-                    print "Accepted - The Robot will perform the run at a height of %.1fmm.\n" % height
-                    break
-            except:
-                pass
-            print 'Incorrect input, please try again.\n'
+        print "Tool:", Tool
 
         # Choose the spacing in mm between each waypoint.
         while True:
@@ -157,6 +147,17 @@ class ABBProgram:
             except:
                 pass
             print "Incorrect input, please try again.\n"
+
+        # Choose the height that you wish to run at.
+        while True:
+            try:
+                height = float(raw_input("What is the Z value e.g. {0} is just above the Pillow (360 for Z, 350 for Roll and Pitch): ".format(HH)))
+                if 330 <= height <= 450:
+                    print "Accepted - The Robot will perform the run at a height of %.1fmm.\n" % height
+                    break
+            except:
+                pass
+            print 'Incorrect input, please try again.\n'
 
         return height, step, IP, HH, Tool, TYPE
 
@@ -274,7 +275,7 @@ class ABBProgram:
                     a = self.R.get_cartesian()
                     print a, self.HoverPosition
                 count += 1
-            speedVariable = 2
+            speedVariable = 1
             self.R.set_speed(speed=[speedVariable, speedVariable, 50, 50])
             with print_lock:
                 print "Slowing Down to {0}% 'hover'".format(speedVariable)
