@@ -32,8 +32,10 @@ x2, y2 = refPt[1][0], refPt[1][1]
 colour = [1]
 
 cam = cv2.VideoCapture(1)
+# cam.get(CV_CAP_PROP_FOCUS)
 cam.set(3, 1200)            # horizontal pixels
 cam.set(4, 720)             # vertical pixels
+# cam.set(, 0)
 time.sleep(1)
 initialize = 1
 record, recording = 0, 0
@@ -41,13 +43,22 @@ while True:
     ret, image   = cam.read()
     # If the first picture is valid
     if ret:
+        # cv2.imshow("TEST", image)
+        # k = cv2.waitKey(0) & 0xFF
+        # if k == 32:
+        #     cv2.destroyAllWindows()
         if record:
             print "Setting up video"
             # Define the codec and create VideoWriter object
             fps               = 10
-            numberofVideos    = len([name for name in os.listdir(directory) if os.path.isfile(os.path.join(directory, name))])
+            DIRV = os.path.join(directory, 'VideoOfVectors_{0}FPS'.format(fps))
+            makedir(DIRV)
+            # DIRR = os.path.join(directory, 'RawImage_{0}FPS'.format(fps))
+            # makedir(DIRR)
+            numberofVideos    = len([name for name in os.listdir(DIRV) if os.path.isfile(os.path.join(DIRV, name))])
             fourcc            = cv2.VideoWriter_fourcc(*'DIVX')
-            VideoFrame        = cv2.VideoWriter(os.path.join(directory, 'RealTime_{0}FPS_{1}'.format(fps, numberofVideos) + '.avi'), fourcc, fps, (933,654))
+            VideoOfVectors    = cv2.VideoWriter(os.path.join(DIRV, str(numberofVideos) + '.avi'), fourcc, fps, (933,654))
+            # VideoOfRawImage   = cv2.VideoWriter(os.path.join(DIRR, '{1}'.format(numberofVideos) + '.avi'), fourcc, fps, (933,654))
             record, recording = 0, 1
             print fps, numberofVideos
             print "Recording"
@@ -56,7 +67,12 @@ while True:
             # Setup the first image
             # image1 = image
             init               = Pillow(image, refPt)
-            ROI1, _            = init.getFrame()
+            ROI1, _           = init.getFrame()
+            # print ROI1.shape
+            # cv2.imshow("TEST", ROI1)
+            # k = cv2.waitKey(0) & 0xFF
+            # if k == 32:
+            #     cv2.destroyAllWindows()
             # cv2.imshow("Camera", ROI1)
             # Sending the keypoints data to the class Pins in Pillow. Gives you the regions of the pins in coords.txt
             # Read the numbered regional data from the text file
@@ -69,6 +85,7 @@ while True:
             # Set up the second image
             rec                 = Pillow(image, refPt)
             ROI2,frame_with_box = rec.getFrame()
+            boxedFrame          = copy.deepcopy(frame_with_box)
             # Set the detectors parametors and detect blobs.
             keypoints           = rec.detectorParameters().detect(ROI2)
             Frame               = image[y1:y2, x1:x2]
@@ -80,9 +97,9 @@ while True:
             BlackImage          = np.zeros((image.shape[0], x2-x1, 3), np.uint8)#; BlackImage.fill(255)
             BearingImage        = copy.deepcopy(BlackImage[y1:y2, 0:x2-x1])
 
-            mask                = [np.array([data[7]])*7 for data in DATA]
-            findCentre          = np.array([np.array(data)[['Pin Number', 'Reference X Coordinate', 'Reference Y Coordinate', 'DifferenceX', 'DifferenceY', 'Displacement', 'Bearing']] for data in DATA])
-            findCentre          = findCentre.compress(np.ravel(mask))
+            # mask                = [np.array([data[7]])*7 for data in DATA]
+            # findCentre          = np.array([np.array(data)[['Pin Number', 'Reference X Coordinate', 'Reference Y Coordinate', 'DifferenceX', 'DifferenceY', 'Displacement', 'Bearing']] for data in DATA])
+            # findCentre          = findCentre.compress(np.ravel(mask))
             # if len(findCentre) > 4:
             #     print np.mean(findCentre['Reference X Coordinate'] + findCentre['DifferenceX']), np.mean(findCentre['Reference Y Coordinate'] + findCentre['DifferenceY'])
             #     cv2.circle(BearingImage, (int(np.mean(findCentre['Reference X Coordinate'] + findCentre['DifferenceX'])), int(np.mean(findCentre['Reference Y Coordinate'] + findCentre['DifferenceY']))), 5, (0, 255, 255), -1)
@@ -154,7 +171,7 @@ while True:
                     cv2.circle(Frame, (int(data[4]), int(data[5])), 1, (0, 0, 255), 2)
             frame_with_box[y1:y2, x1:x2] = Frame
             # Creates a black image and sets each pixel value as white.
-            width = 60
+            width    = 60
             whiteBar = np.zeros((width, int(np.shape(frame_with_box)[1]), 3), np.uint8); whiteBar.fill(255)
             # Sets the region specified to be equal to the white image create above.
             frame_with_box[0:width, 0:int(np.shape(frame_with_box)[1])] = whiteBar
@@ -170,7 +187,7 @@ while True:
             VectorField = np.concatenate((VectorField,greybar, blackBar), axis=0)
 
             # Draw reference Blob
-            fontsize = 0.4; Separation = 30
+            fontsize   = 0.4; Separation = 30
             BlobCoords = (VectorField.shape[1]-100, VectorField.shape[0]-75)
             cv2.circle(VectorField, BlobCoords, 4, (255,255,255), -1)
             cv2.line(VectorField, BlobCoords, (BlobCoords[0]+20, BlobCoords[1]-20), (255, 255, 255), 2)
@@ -182,13 +199,14 @@ while True:
             # Show the frames
             # cv2.imshow("Camera", video)
             # cv2.imshow('frame2', ROI2)
-            # cv2.imshow("Overview", frame_with_box)
+            cv2.imshow("Overview", boxedFrame)
             cv2.imshow("Bearings", VectorField)
             # print VectorField.shape
             if recording:
-                VideoFrame.write(VectorField)
+                VideoOfVectors.write(VectorField)
         except IndexError:
             initialize = 1
+            time.sleep(4)
 
     if not ret:
         print "Camera not attached or in use."
@@ -200,16 +218,17 @@ while True:
     if k == 9:
         superimposeLines = ~superimposeLines
     if k == 114:
-        print "Key pressed"
         if recording:
             print "Stopped recording"
             recording = 0
-            VideoFrame.release()
+            VideoOfVectors.release()
         else:
             record = 1
+    if k == 115:
+        cv2.imwrite("VectorField.png", VectorField)
     elif k == 27:
         if recording:
-            VideoFrame.release()
+            VideoOfVectors.release()
         cam.release()
         cv2.destroyAllWindows()
         break

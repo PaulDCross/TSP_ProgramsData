@@ -31,8 +31,8 @@ class Pillow:
         ret, thresholded = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU) #200 255
         # thresholded = cv2.threshold(image, 200, 255, cv2.THRESH_BINARY)[1]
         # Dialate the thresholded image to fill in holes
-        image = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, None, iterations = 1)
-        ROI = cv2.dilate(image, None, iterations = 4)
+        imaget = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, None, iterations = 1)
+        ROI = cv2.dilate(imaget, None, iterations = 4)
 
         frame_with_box = cv2.rectangle(self.frame, (x1,y1), (x2,y2), (0,255,0), 1)
 
@@ -109,8 +109,8 @@ class Pillow:
             self.DistanceBearing.append([data1[i][0], state, dx[i], dy[i], distance, bearing, changeinSize])
             self.DistanceBearing.sort(key = itemgetter(0),reverse = False)
 
-            if len(self.DistanceBearing) == L2:
-                rw().writeList2File("Pin_Distances_Bearings.txt", self.DistanceBearing)
+            # if len(self.DistanceBearing) == L2:
+            #     rw().writeList2File("Pin_Distances_Bearings.txt", self.DistanceBearing)
 
         return self.DistanceBearing
 
@@ -118,10 +118,10 @@ class Pillow:
     def blobCheck(self, coords, xyn):
         """ get the blob name from a predefined blobposition"""
         pins = Pins(self.refPt)
-        Rows, _ = pins.countRnC(xyn)
+        columns, _ = pins.countRnC(xyn)
         for i in xrange(len(xyn)):
             if coords[1] < xyn[i][1]:
-                for j in xrange(Rows):
+                for j in xrange(columns):
                     if coords[0] < xyn[j][0]:
                         return xyn[i + j][2]
 
